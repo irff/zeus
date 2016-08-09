@@ -1,0 +1,4 @@
+Flask-DotEnv==0.1.0
+Flask-MongoEngine==0.7.5
+Flask==0.10.1
+slugify==0.0.1
