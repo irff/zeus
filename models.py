@@ -1,9 +1,16 @@
 from mongoengine import *
+import datetime
 
 class User(Document):
 	email = StringField(unique=True, max_length=255)
 	password = StringField(max_length=255)
-	created_at = DateTimeField()
+	created_at = DateTimeField(default=datetime.datetime.now())
+
+	def serialize(self):
+		return {
+			'email': self.email,
+			'created_at': self.created_at.isoformat()
+		}
 
 class Student(Document):
 	name = StringField(max_length=255)
@@ -34,10 +41,29 @@ class Company(Document):
 	photos = ListField(ImageField())
 	contact_person = ReferenceField('ContactPerson')
 
+	def serialize(self):
+		return {
+			'name': self.name,
+			'office_locations': self.office_locations,
+			'job_posts': self.job_posts,
+			'industry': self.industry,
+			'website': self.website,
+			'logo_url': self.logo_url,
+			'photos': self.photos,
+			'contact_person': self.contact_person
+		}
+
 class OfficeLocation(Document):
 	name = StringField(max_length=255)
 	address = StringField(max_length=255)
 	location = GeoPointField()
+
+	def serialize(self):
+		return {
+			'name': self.name,
+			'address': self.address,
+			'location': self.location
+		}
 
 class ContactPerson(Document):
 	name = StringField(max_length=255)
@@ -45,9 +71,23 @@ class ContactPerson(Document):
 	phone = StringField(max_length=255)
 	email = EmailField()
 
+	def serialize(self):
+		return {
+			'name': self.name,
+			'role': self.role,
+			'phone': self.phone,
+			'email': self.email
+		}
+
 class InternshipSchedule(EmbeddedDocument):
 	start_at = DateTimeField()
 	end_at = DateTimeField()
+
+	def serialize(self):
+		return {
+			'start_at': self.start_at,
+			'end_at': self.end_at
+		}
 	
 class JobPost(Document):
 	role = StringField(max_length=255)
@@ -60,9 +100,29 @@ class JobPost(Document):
 	experiences_gained = ListField(StringField(max_length=255))
 	contact_person = ReferenceField('ContactPerson')
 
+	def serialize(self):
+		return {
+			'role': self.role,
+			'why_us': self.why_us,
+			'salary': self.salary,
+			'technical_requirements': self.technical_requirements,
+			'internship_schedule': self.internship_schedule.serialize(),
+			'tasks': self.tasks,
+			'skills_gained': self.skills_gained,
+			'experiences_gained': self.experiences_gained,
+			'contact_person': self.contact_person
+		}
 
 class Application(Document):
 	job_post = ReferenceField('JobPost')
 	student = ReferenceField('Student')
-	applied_at = DateTimeField()
+	applied_at = DateTimeField(default=datetime.datetime.now)
 	status = StringField(max_length=255)
+
+	def serialize(self):
+		return {
+			'job_post': self.job_post,
+			'student': self.student,
+			'applied_at': self.applied_at,
+			'status': self.status
+		}
