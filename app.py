@@ -5,7 +5,7 @@ from flask_dotenv import DotEnv
 import json
 
 from models import *
-
+from seeds import Seeder
 
 env = DotEnv()
 app = Flask(__name__)
@@ -13,16 +13,10 @@ app.config['DEBUG'] = True
 env.init_app(app)
 db = MongoEngine(app)
 
-Student.drop_collection()
-student1 = Student(name='Tri Ahmad Irfan',
-				   major='Computer Science',
-				   school='University of Indonesia',
-				   resume_url='http://google.com',
-				   linkedin_url='http://google.com',
-				   photo_url='http://google.com',
-				   headline='Back-end developer at Quint')
-student1.save()
+seeder = Seeder()
+seeder.seed()
 
+# ROUTE TESTING
 @app.route("/")
 def hello():
     return "Hello World!"
@@ -31,6 +25,22 @@ def hello():
 def students():
 	students = Student.objects().first()
 	return Response(json.dumps(students.serialize()), mimetype='application/json')
+
+@app.route("/users")
+def users():
+	users = User.objects().first()
+	return Response(json.dumps(users.serialize()), mimetype='application/json')
+
+@app.route("/companies")
+def companies():
+	companies = Company.objects().first()
+	return Response(json.dumps(companies.serialize()), mimetype='application/json')
+
+@app.route("/applications")
+def applications():
+	applications = Application.objects().first()
+	return Response(json.dumps(applications.serialize()), mimetype='application/json')
+
 
 if __name__ == "__main__":
     app.run()
