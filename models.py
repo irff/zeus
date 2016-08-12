@@ -31,6 +31,12 @@ class Student(Document):
 			'headline': self.headline
 		}
 
+class CompanyPhoto(EmbeddedDocument):
+	img = ImageField()
+
+	def serialize(self):
+		return self.img.read().encode('base64')
+
 class Company(Document):
 	name = StringField(max_length=255)
 	office_locations = ListField(ReferenceField('OfficeLocation'))
@@ -38,19 +44,35 @@ class Company(Document):
 	industry = StringField(max_length=255)
 	website = URLField()
 	logo_url = URLField()
-	photos = ListField(ImageField())
+	photos = EmbeddedDocumentListField('CompanyPhoto')
 	contact_person = ReferenceField('ContactPerson')
 
 	def serialize(self):
+		def officeLoc():
+			locations = []
+			for loc in self.office_locations:
+				locations.append(loc.serialize())
+			return locations
+		def jobPost():
+			jobs = []
+			for job in self.job_posts:
+				jobs.append(job.serialize())
+			return jobs
+		def photos():
+			photos = []
+			for photo in self.photos:
+				photos.append(photo.serialize())
+			return photos
+
 		return {
 			'name': self.name,
-			'office_locations': self.office_locations,
-			'job_posts': self.job_posts,
+			'office_locations': officeLoc(),
+			'job_posts': jobPost(),
 			'industry': self.industry,
 			'website': self.website,
 			'logo_url': self.logo_url,
-			'photos': self.photos,
-			'contact_person': self.contact_person
+			'photos': photos(),
+			'contact_person': self.contact_person.serialize()
 		}
 
 class OfficeLocation(Document):
@@ -85,8 +107,8 @@ class InternshipSchedule(EmbeddedDocument):
 
 	def serialize(self):
 		return {
-			'start_at': self.start_at,
-			'end_at': self.end_at
+			'start_at': self.start_at.isoformat(),
+			'end_at': self.end_at.isoformat()
 		}
 	
 class JobPost(Document):
@@ -110,7 +132,7 @@ class JobPost(Document):
 			'tasks': self.tasks,
 			'skills_gained': self.skills_gained,
 			'experiences_gained': self.experiences_gained,
-			'contact_person': self.contact_person
+			'contact_person': self.contact_person.serialize()
 		}
 
 class Application(Document):
@@ -121,8 +143,8 @@ class Application(Document):
 
 	def serialize(self):
 		return {
-			'job_post': self.job_post,
-			'student': self.student,
-			'applied_at': self.applied_at,
+			'job_post': self.job_post.serialize(),
+			'student': self.student.serialize(),
+			'applied_at': self.applied_at.isoformat(),
 			'status': self.status
 		}
