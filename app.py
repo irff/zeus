@@ -23,23 +23,23 @@ def hello():
 
 @app.route("/students")
 def students():
-	students = Student.objects().first()
-	return Response(json.dumps(students.serialize()), mimetype='application/json')
+    students = Student.objects().first()
+    return Response(json.dumps(students.serialize()), mimetype='application/json')
 
 @app.route("/users")
 def users():
-	users = User.objects().first()
-	return Response(json.dumps(users.serialize()), mimetype='application/json')
+    users = User.objects().first()
+    return Response(json.dumps(users.serialize()), mimetype='application/json')
 
 @app.route("/companies")
 def companies():
-	companies = Company.objects().first()
-	return Response(json.dumps(companies.serialize()), mimetype='application/json')
+    companies = Company.objects().first()
+    return Response(json.dumps(companies.serialize()), mimetype='application/json')
 
 @app.route("/applications")
 def applications():
-	applications = Application.objects().first()
-	return Response(json.dumps(applications.serialize()), mimetype='application/json')
+    applications = Application.objects().first()
+    return Response(json.dumps(applications.serialize()), mimetype='application/json')
 
 
 if __name__ == "__main__":
