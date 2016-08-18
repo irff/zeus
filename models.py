@@ -1,7 +1,8 @@
 from mongoengine import *
 import datetime
+from flask_login import UserMixin
 
-class User(Document):
+class User(Document, UserMixin):
     email = StringField(unique=True, max_length=255)
     password = StringField(max_length=255)
     created_at = DateTimeField(default=datetime.datetime.now())
