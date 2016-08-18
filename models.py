@@ -20,6 +20,7 @@ class Student(Document):
     linkedin_url = URLField()
     photo_url = URLField()
     headline = StringField(max_length=255)
+    
     def serialize(self):
         return {
             'name': self.name,
@@ -48,30 +49,20 @@ class Company(Document):
     contact_person = ReferenceField('ContactPerson')
 
     def serialize(self):
-        def officeLoc():
-            locations = []
-            for loc in self.office_locations:
-                locations.append(loc.serialize())
-            return locations
-        def jobPost():
-            jobs = []
-            for job in self.job_posts:
-                jobs.append(job.serialize())
-            return jobs
-        def photos():
-            photos = []
-            for photo in self.photos:
-                photos.append(photo.serialize())
-            return photos
+        def to_json(items):
+            json_obj = []
+            for item in items:
+                json_obj.append(item.serialize())
+            return json_obj
 
         return {
             'name': self.name,
-            'office_locations': officeLoc(),
-            'job_posts': jobPost(),
+            'office_locations': to_json(self.office_locations),
+            'job_posts': to_json(self.job_posts),
             'industry': self.industry,
             'website': self.website,
             'logo_url': self.logo_url,
-            'photos': photos(),
+            'photos': to_json(self.photos),
             'contact_person': self.contact_person.serialize()
         }
 
