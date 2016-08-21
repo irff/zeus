@@ -18,9 +18,6 @@ env.init_app(app)
 login_manager.init_app(app)
 db = MongoEngine(app)
 
-seeder = Seeder()
-seeder.seed()
-
 # LOGIN, LOGOUT, REGISTER
 @login_manager.user_loader
 def load_user(user_id):
@@ -79,22 +76,22 @@ def hello():
 @app.route("/students")
 def students():
     students = Student.objects().first()
-    return Response(json.dumps(students.serialize()), mimetype='application/json')
+    return jsonify(students.serialize()), 200
 
 @app.route("/users")
 def users():
     users = User.objects().first()
-    return Response(json.dumps(users.serialize()), mimetype='application/json')
+    return jsonify(users.serialize()), 200
 
 @app.route("/companies")
 def companies():
     companies = Company.objects().first()
-    return Response(json.dumps(companies.serialize()), mimetype='application/json')
+    return jsonify(companies.serialize()), 200
 
 @app.route("/applications")
 def applications():
     applications = Application.objects().first()
-    return Response(json.dumps(applications.serialize()), mimetype='application/json')
+    return jsonify(applications.serialize()), 200
 
 if __name__ == "__main__":
     app.run()
