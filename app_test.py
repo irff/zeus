@@ -16,10 +16,11 @@ class Helper():
     def logout(self):
         return self.app.get('/logout')
 
-    def register(self, email, password):
+    def register(self, email, password, confirm_password):
         return self.app.post('/register', data=dict(
             email=email,
-            password=password
+            password=password,
+            confirm_password=confirm_password
         ))
 
     def get_model(self, model):
@@ -44,9 +45,21 @@ class AuthTest(unittest.TestCase):
             rv = self.helper.login('genturwt@gmail.com', 'quint')
             self.assertIn('invalid', rv.data)
 
+        def invalid_email():
+            rv = self.helper.login('kenny', 'quint')
+            self.assertIn('Not a valid email', rv.data)
+
+        def empty_required_field():
+            rv = self.helper.login('quint', '')
+            self.assertIn('This field is required.', rv.data)
+            rv = self.helper.login('', 'quint')
+            self.assertIn('This field is required.', rv.data)
+
         valid_credential()
         wrong_email()
         wrong_password()
+        invalid_email()
+        empty_required_field()
 
     def test_logout(self):
         def with_login():
@@ -63,15 +76,32 @@ class AuthTest(unittest.TestCase):
 
     def test_register(self):
         def valid_credential():
-            rv = self.helper.register('tri@quint.dev', 'quint')
+            rv = self.helper.register('tri@quint.dev', 'quint', 'quint')
             self.assertIn('created', rv.data)
         
         def duplicate_email():
-            rv = self.helper.register('genturwt@gmail.com', 'quint')
+            rv = self.helper.register('genturwt@gmail.com', 'quint', 'quint')
             self.assertIn('exist', rv.data)
+
+        def password_not_match():
+            rv = self.helper.register('kenny@quint.dev', 'quint', 'qui')
+            self.assertIn('Field must be equal', rv.data)
+
+        def invalid_email():
+            rv = self.helper.register('kenny', 'quint', 'quint')
+            self.assertIn('Not a valid email', rv.data)
+
+        def empty_required_field():
+            rv = self.helper.register('quint', '', 'quint')
+            self.assertIn('This field is required.', rv.data)
+            rv = self.helper.register('', 'quint', 'quint')
+            self.assertIn('This field is required.', rv.data)
 
         valid_credential()
         duplicate_email()
+        password_not_match()
+        invalid_email()
+        empty_required_field()
 
 class ModelTest(unittest.TestCase):
     def setUp(self):

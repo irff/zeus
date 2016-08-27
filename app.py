@@ -8,6 +8,7 @@ import json
 
 from models import *
 from seeds import Seeder
+from forms import *
 
 env = DotEnv()
 login_manager = LoginManager()
@@ -17,6 +18,8 @@ app.secret_key = 'QuintDev'
 env.init_app(app)
 login_manager.init_app(app)
 db = MongoEngine(app)
+
+Seeder().seed()
 
 # LOGIN, LOGOUT, REGISTER
 @login_manager.user_loader
@@ -31,6 +34,10 @@ def unauthorized():
 
 @app.route("/login", methods=['POST'])
 def login():
+    form = LoginForm(request.form)
+    if(not form.validate()):
+        return jsonify(form.serialize_error()), 403
+
     email = request.form['email']
     password = request.form['password']
     user = User.objects(email=email).first()
@@ -54,10 +61,13 @@ def logout():
 
 @app.route("/register", methods=['POST'])
 def register():
-    email = request.form['email']
-    password = request.form['password']
-
+    form = RegistrationForm(request.form)
     try:
+        if(not form.validate()):
+            return jsonify(form.serialize_error()), 403
+        
+        email = request.form['email']
+        password = request.form['password']
         user = User(email=email, password=generate_password_hash(password))
         user.save()
         return jsonify({
