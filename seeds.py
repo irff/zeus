@@ -21,6 +21,14 @@ def seedUser():
                 password=generate_password_hash('quint-dev'))
     user1.save()
 
+    user2 = User(email='kenny@gmail.com',
+                password=generate_password_hash('quint-front'))
+    user2.save()
+
+    user3 = User(email='irfan@gmail.com',
+                password=generate_password_hash('quint-master'))
+    user3.save()
+
 def seedOfficeLocation():
     OfficeLocation.drop_collection()
     officeLocation1 = OfficeLocation(name='Quint Tower',
