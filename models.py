@@ -2,16 +2,11 @@ from mongoengine import *
 import datetime
 from flask_login import UserMixin
 
-class User(Document, UserMixin):
-    email = StringField(unique=True, max_length=255)
-    password = StringField(max_length=255)
-    created_at = DateTimeField(default=datetime.datetime.now())
-
-    def serialize(self):
-        return {
-            'email': self.email,
-            'created_at': self.created_at.isoformat()
-        }
+def derefer(data):
+    if data == None:
+        return ""
+    else:
+        return data.serialize()
 
 class Student(Document):
     name = StringField(max_length=255)
@@ -39,33 +34,6 @@ class CompanyPhoto(EmbeddedDocument):
     def serialize(self):
         return self.img.read().encode('base64')
 
-class Company(Document):
-    name = StringField(max_length=255)
-    office_locations = ListField(ReferenceField('OfficeLocation'))
-    job_posts = ListField(ReferenceField('JobPost'))
-    industry = StringField(max_length=255)
-    website = URLField()
-    logo_url = URLField()
-    photos = EmbeddedDocumentListField('CompanyPhoto')
-    contact_person = ReferenceField('ContactPerson')
-
-    def serialize(self):
-        def to_json(items):
-            json_obj = []
-            for item in items:
-                json_obj.append(item.serialize())
-            return json_obj
-
-        return {
-            'name': self.name,
-            'office_locations': to_json(self.office_locations),
-            'job_posts': to_json(self.job_posts),
-            'industry': self.industry,
-            'website': self.website,
-            'logo_url': self.logo_url,
-            'photos': to_json(self.photos),
-            'contact_person': self.contact_person.serialize()
-        }
 
 class OfficeLocation(Document):
     name = StringField(max_length=255)
@@ -112,7 +80,7 @@ class JobPost(Document):
     tasks = ListField(StringField(max_length=255))
     skills_gained = ListField(StringField(max_length=255))
     experiences_gained = ListField(StringField(max_length=255))
-    contact_person = ReferenceField('ContactPerson')
+    contact_person = ReferenceField('ContactPerson', reverse_delete_rule=NULLIFY)
 
     def serialize(self):
         return {
@@ -120,23 +88,65 @@ class JobPost(Document):
             'why_us': self.why_us,
             'salary': self.salary,
             'technical_requirements': self.technical_requirements,
-            'internship_schedule': self.internship_schedule.serialize(),
+            'internship_schedule': derefer(self.internship_schedule),
             'tasks': self.tasks,
             'skills_gained': self.skills_gained,
             'experiences_gained': self.experiences_gained,
-            'contact_person': self.contact_person.serialize()
+            'contact_person': derefer(self.contact_person)
         }
 
 class Application(Document):
-    job_post = ReferenceField('JobPost')
-    student = ReferenceField('Student')
+    job_post = ReferenceField('JobPost', reverse_delete_rule=NULLIFY)
+    student = ReferenceField('Student', reverse_delete_rule=NULLIFY)
     applied_at = DateTimeField(default=datetime.datetime.now)
     status = StringField(max_length=255)
 
+
     def serialize(self):
+
         return {
-            'job_post': self.job_post.serialize(),
-            'student': self.student.serialize(),
+            'job_post': derefer(self.job_post),
+            'student': derefer(self.student),
             'applied_at': self.applied_at.isoformat(),
             'status': self.status
+        }
+
+class Company(Document):
+    name = StringField(max_length=255)
+    office_locations = ListField(ReferenceField('OfficeLocation', reverse_delete_rule=NULLIFY))
+    job_posts = ListField(ReferenceField('JobPost', reverse_delete_rule=NULLIFY))
+    industry = StringField(max_length=255)
+    website = URLField()
+    logo_url = URLField()
+    photos = EmbeddedDocumentListField('CompanyPhoto')
+    contact_person = ReferenceField('ContactPerson', reverse_delete_rule=NULLIFY)
+
+    def serialize(self):
+        def to_json(items):
+            json_obj = []
+            for item in items:
+                json_obj.append(derefer(item))
+            return json_obj
+
+        return {
+            'name': self.name,
+            'office_locations': to_json(self.office_locations),
+            'job_posts': to_json(self.job_posts),
+            'industry': self.industry,
+            'website': self.website,
+            'logo_url': self.logo_url,
+            'photos': to_json(self.photos),
+            'contact_person': derefer(self.contact_person)
+        }
+
+class User(Document, UserMixin):
+    email = StringField(unique=True, max_length=255)
+    password = StringField(max_length=255)
+    created_at = DateTimeField(default=datetime.datetime.now())
+    student = ReferenceField('Student', reverse_delete_rule=NULLIFY)
+
+    def serialize(self):
+        return {
+            'email': self.email,
+            'created_at': self.created_at.isoformat()
         }
