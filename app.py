@@ -34,14 +34,14 @@ def unauthorized():
 
 @app.route("/login", methods=['POST'])
 def login():
-    form = LoginForm(request.form)
+    form = LoginForm.from_json(request.json)
     if(not form.validate()):
         return jsonify(form.serialize_error()), 403
 
-    email = request.form['email']
-    password = request.form['password']
-    user = User.objects(email=email).first()
+    email = request.json['email']
+    password = request.json['password']
 
+    user = User.objects(email=email).first()
     if user == None or not check_password_hash(user.password, password):
         return jsonify({
             'status': 'invalid credentials'
@@ -49,6 +49,8 @@ def login():
     else:
         login_user(user)
         return jsonify({
+            'user_id': str(user.id),
+            'name': user.student.name,
             'status': 'logged in successfully'
         }), 200
 
@@ -61,13 +63,13 @@ def logout():
 
 @app.route("/register", methods=['POST'])
 def register():
-    form = RegistrationForm(request.form)
+    form = RegistrationForm.from_json(request.json)
     try:
         if(not form.validate()):
             return jsonify(form.serialize_error()), 403
         
-        email = request.form['email']
-        password = request.form['password']
+        email = request.json['email']
+        password = request.json['password']
         user = User(email=email, password=generate_password_hash(password))
         user.save()
         return jsonify({
@@ -77,6 +79,51 @@ def register():
         return jsonify({
             'status': 'email already exist'
         }), 403
+
+# JOB POST CRUD
+@app.route("/jobs", methods=['GET'])
+def get_jobs():
+    jobs = JobPost.objects().all()
+    jobs_json = []
+    for job in jobs:
+        jobs_json.append(job.serialize())
+    return jsonify({
+        'jobs': jobs_json,
+        'status': 'success'
+    }), 200
+
+@app.route("/jobs", methods=['POST'])
+def add_job():
+    data = request.json
+    data['internship_schedule'] = InternshipSchedule(**data['internship_schedule'])
+    data['contact_person'] = ContactPerson.objects(id=data['contact_person']).first()
+    new_job = JobPost(**data)
+    new_job.save()
+
+    return jsonify({
+        'status': 'job successfully posted'
+    }), 201
+
+@app.route("/jobs/<job_id>", methods=['PUT'])
+def modify_job(job_id):
+    data = request.json
+    data['internship_schedule'] = InternshipSchedule(**data['internship_schedule'])
+    data['contact_person'] = ContactPerson.objects(id=data['contact_person']).first()
+    job = JobPost.objects(id=job_id).modify(**data)
+
+    return jsonify({
+        'job': job.serialize(),
+        'status': 'job successfully modified'
+    }), 200
+
+@app.route("/jobs/<job_id>", methods=['DELETE'])
+def delete_job(job_id):
+    JobPost.objects(id=job_id).delete()
+    return jsonify({
+        'status': 'job successfully deleted'
+    }), 200
+
+
 
 # ROUTE TESTING
 @app.route("/")

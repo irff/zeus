@@ -4,3 +4,4 @@ Flask==0.11.1
 Flask-Login==0.3.2
 slugify==0.0.1
 Pillow==3.3.0
+WTForms-JSON==0.3.0

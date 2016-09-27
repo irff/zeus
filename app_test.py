@@ -1,30 +1,42 @@
 import app
 import unittest
 import json
-from seeds import Seeder
+from seeds import *
+from models import *
 
 class Helper():
     def __init__(self):
         self.app = app.app.test_client()
 
     def login(self, email, password):
-        return self.app.post('/login', data=dict(
+        return self.app.post('/login', data=json.dumps(dict(
             email=email,
             password=password
-        ))
+        )), content_type='application/json')
 
     def logout(self):
         return self.app.get('/logout')
 
-    def register(self, email, password, confirm_password):
-        return self.app.post('/register', data=dict(
+    def register(self, email, password):
+        return self.app.post('/register', data=json.dumps(dict(
             email=email,
-            password=password,
-            confirm_password=confirm_password
-        ))
+            password=password
+        )), content_type='application/json')
 
     def get_model(self, model):
         return self.app.get('/'+model)
+
+    def post(self, url, data):
+        return self.app.post(url, data=json.dumps(data), content_type='application/json')
+
+    def get(self, url):
+        return self.app.get(url)
+
+    def delete(self, url):
+        return self.app.delete(url)
+
+    def put(self, url, data):
+        return self.app.put(url, data=json.dumps(data), content_type='application/json')
 
 class AuthTest(unittest.TestCase):
 
@@ -76,32 +88,88 @@ class AuthTest(unittest.TestCase):
 
     def test_register(self):
         def valid_credential():
-            rv = self.helper.register('tri@quint.dev', 'quint', 'quint')
+            rv = self.helper.register('tri@quint.dev', 'quint')
             self.assertIn('created', rv.data)
         
         def duplicate_email():
-            rv = self.helper.register('genturwt@gmail.com', 'quint', 'quint')
+            rv = self.helper.register('genturwt@gmail.com', 'quint')
             self.assertIn('exist', rv.data)
 
-        def password_not_match():
-            rv = self.helper.register('kenny@quint.dev', 'quint', 'qui')
-            self.assertIn('Field must be equal', rv.data)
-
         def invalid_email():
-            rv = self.helper.register('kenny', 'quint', 'quint')
+            rv = self.helper.register('kenny', 'quint')
             self.assertIn('Not a valid email', rv.data)
 
         def empty_required_field():
-            rv = self.helper.register('quint', '', 'quint')
+            rv = self.helper.register('quint', '')
             self.assertIn('This field is required.', rv.data)
-            rv = self.helper.register('', 'quint', 'quint')
+            rv = self.helper.register('', 'quint')
             self.assertIn('This field is required.', rv.data)
 
         valid_credential()
         duplicate_email()
-        password_not_match()
         invalid_email()
         empty_required_field()
+
+class JobPostTest(unittest.TestCase):
+    def setUp(self):
+        self.app = app.app.test_client()
+        self.helper = Helper()
+
+    def test_base(self):
+        rv = self.helper.get('/jobs')
+        self.assertIn('success', rv.data)
+
+    def test_creation(self):
+        contact_person = str(ContactPerson.objects().first().id)
+        rv = self.helper.post('/jobs', {
+            'role': "Software Engineer",
+            'why_us': 'We are the top brand company in Indonesia',
+            'salary': {
+                'fee': 450000,
+                'currency': '$',
+                'term': 'month'
+            },
+            'technical_requirements': ['SQL', 'Python', 'CP Skills'],
+            'internship_schedule': {
+                'start_at': '2016-09-27 20:56:54.181914',
+                'end_at': '2016-10-27 20:56:54.181914'
+            },
+            'tasks': ['Building Frontend', 'Building Backend'],
+            'skills_gained': ['Hardwork', 'Relations'],
+            'experiences_gained': ['Experience in Collaboration', 'Love from Quint'],
+            'contact_person': contact_person
+        })
+        self.assertIn('success', rv.data)
+
+    def test_modification(self):
+        contact_person = str(ContactPerson.objects().first().id)
+        job = JobPost.objects().first()
+        job_id = str(job.id)
+        rv = self.helper.put('/jobs/'+job_id, {
+            'role': "Software Developer",
+            'why_us': 'We are the top brand company in Indonesia',
+            'salary': {
+                'fee': 450000,
+                'currency': '$',
+                'term': 'month'
+            },
+            'technical_requirements': ['SQL', 'Python', 'CP Skills'],
+            'internship_schedule': {
+                'start_at': '2016-09-27 20:56:54.181914',
+                'end_at': '2016-10-27 20:56:54.181914'
+            },
+            'tasks': ['Building Frontend', 'Building Backend'],
+            'skills_gained': ['Hardwork', 'Relations'],
+            'experiences_gained': ['Experience in Collaboration', 'Love from Quint'],
+            'contact_person': contact_person
+        })
+        self.assertIn('success', rv.data)
+
+    def test_deletion(self):
+        job = JobPost.objects().first()
+        job_id = str(job.id)
+        rv = self.helper.delete('/jobs/'+job_id)
+
 
 class ModelTest(unittest.TestCase):
     def setUp(self):
@@ -126,6 +194,4 @@ class ModelTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    seeder = Seeder()
-    seeder.seed()
     unittest.main()
