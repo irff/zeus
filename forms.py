@@ -1,4 +1,7 @@
 from wtforms import Form, BooleanField, StringField, PasswordField, validators
+import wtforms_json
+
+wtforms_json.init()
 
 class RegistrationForm(Form):
     email = StringField('Email', [
@@ -6,16 +9,13 @@ class RegistrationForm(Form):
         validators.DataRequired()
     ])
     password = PasswordField('Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm_password', 'Field must be equal to Confirm Password')
+        validators.DataRequired()
     ])
-    confirm_password = PasswordField('Confirm Password')
 
     def serialize_error(self):
         return {
             'email': self.email.errors,
             'password': self.password.errors,
-            'confirm_password': self.confirm_password.errors
         }
 
 class LoginForm(Form):
