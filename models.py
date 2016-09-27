@@ -71,10 +71,15 @@ class InternshipSchedule(EmbeddedDocument):
             'end_at': self.end_at.isoformat()
         }
     
+class Salary(EmbeddedDocument):
+    fee = IntField()
+    currency = StringField(max_length=10)
+    term = StringField(max_length=20)
+
 class JobPost(Document):
     role = StringField(max_length=255)
     why_us = StringField()
-    salary = IntField()
+    salary = EmbeddedDocumentField('Salary')
     technical_requirements = ListField(StringField(max_length=255))
     internship_schedule = EmbeddedDocumentField('InternshipSchedule')
     tasks = ListField(StringField(max_length=255))
