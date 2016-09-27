@@ -18,7 +18,8 @@ def seedStudent():
 def seedUser():
     User.drop_collection()
     user1 = User(email='genturwt@gmail.com',
-                password=generate_password_hash('quint-dev'))
+                password=generate_password_hash('quint-dev'),
+                student=Student.objects.first())
     user1.save()
 
     user2 = User(email='kenny@gmail.com',
@@ -102,11 +103,10 @@ def seedApplication():
 
 class Seeder:
     def seed(self):
-        seedUser()
         seedStudent()
+        seedUser()
         seedOfficeLocation()
         seedContactPerson()
         seedJobPost()
         seedCompany()
         seedApplication()
-
