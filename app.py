@@ -3,6 +3,7 @@ from flask_mongoengine import MongoEngine
 from flask_dotenv import DotEnv
 from flask_login import LoginManager, login_user, login_required, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask_oauthlib.provider import OAuth2Provider
 
 import json
 
@@ -18,13 +19,16 @@ app.secret_key = 'QuintDev'
 env.init_app(app)
 login_manager.init_app(app)
 db = MongoEngine(app)
+oauth = OAuth2Provider(app)
 
 Seeder().seed()
 
-# LOGIN, LOGOUT, REGISTER
 @login_manager.user_loader
 def load_user(user_id):
-    return User.objects(id=user_id).first()
+    user = UserStudent.objects(id=user_id).first()
+    if(user == None):
+        user = UserCompany.objects(id=user_id).first()
+    return user
 
 @login_manager.unauthorized_handler
 def unauthorized():
@@ -32,8 +36,9 @@ def unauthorized():
         'status': 'Unauthorized Area'
     }), 401
 
-@app.route("/login", methods=['POST'])
-def login():
+# STUDENT LOGIN, LOGOUT, REGISTER
+@app.route("/students/login", methods=['POST'])
+def student_login():
     form = LoginForm.from_json(request.json)
     if(not form.validate()):
         return jsonify(form.serialize_error()), 403
@@ -41,7 +46,7 @@ def login():
     email = request.json['email']
     password = request.json['password']
 
-    user = User.objects(email=email).first()
+    user = UserStudent.objects(email=email).first()
     if user == None or not check_password_hash(user.password, password):
         return jsonify({
             'status': 'invalid credentials'
@@ -54,15 +59,15 @@ def login():
             'status': 'logged in successfully'
         }), 200
 
-@app.route("/logout")
-def logout():
+@app.route("/students/logout")
+def student_logout():
     logout_user()
     return jsonify({
         'status': 'logged out successfully'
     }), 200
 
-@app.route("/register", methods=['POST'])
-def register():
+@app.route("/students/register", methods=['POST'])
+def student_register():
     form = RegistrationForm.from_json(request.json)
     try:
         if(not form.validate()):
@@ -70,7 +75,56 @@ def register():
         
         email = request.json['email']
         password = request.json['password']
-        user = User(email=email, password=generate_password_hash(password))
+        user = UserStudent(email=email, password=generate_password_hash(password))
+        user.save()
+        return jsonify({
+            'status': 'account created'
+        }), 201
+    except NotUniqueError:
+        return jsonify({
+            'status': 'email already exist'
+        }), 403
+
+# COMPANY LOGIN, LOGOUT, REGISTER
+@app.route("/companies/login", methods=['POST'])
+def company_login():
+    form = LoginForm.from_json(request.json)
+    if(not form.validate()):
+        return jsonify(form.serialize_error()), 403
+
+    email = request.json['email']
+    password = request.json['password']
+
+    user = UserCompany.objects(email=email).first()
+    if user == None or not check_password_hash(user.password, password):
+        return jsonify({
+            'status': 'invalid credentials'
+        }), 403
+    else:
+        login_user(user)
+        return jsonify({
+            'user_id': str(user.id),
+            'name': user.company.name,
+            'status': 'logged in successfully'
+        }), 200
+
+@app.route("/companies/logout")
+def company_logout():
+    logout_user()
+    return jsonify({
+        'status': 'logged out successfully'
+    }), 200
+
+@app.route("/companies/register", methods=['POST'])
+def company_register():
+    form = RegistrationForm.from_json(request.json)
+    try:
+        if(not form.validate()):
+            return jsonify(form.serialize_error()), 403
+        
+        email = request.json['email']
+        password = request.json['password']
+        user = UserCompany(email=email, password=generate_password_hash(password))
         user.save()
         return jsonify({
             'status': 'account created'
@@ -193,7 +247,7 @@ def students():
 
 @app.route("/users")
 def users():
-    users = User.objects().first()
+    users = UserStudent.objects().first()
     return jsonify(users.serialize()), 200
 
 @app.route("/companies")

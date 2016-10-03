@@ -15,19 +15,38 @@ def seedStudent():
                    headline='Back-end developer at Quint')
     student1.save()
 
-def seedUser():
-    User.drop_collection()
-    user1 = User(email='genturwt@gmail.com',
+def seedUserStudent():
+    UserStudent.drop_collection()
+    user1 = UserStudent(email='genturwt@gmail.com',
                 password=generate_password_hash('quint-dev'),
                 student=Student.objects.first())
     user1.save()
 
-    user2 = User(email='kenny@gmail.com',
-                password=generate_password_hash('quint-front'))
+    user2 = UserStudent(email='kenny@gmail.com',
+                password=generate_password_hash('quint-front'),
+                student=Student.objects.first())
     user2.save()
 
-    user3 = User(email='irfan@gmail.com',
-                password=generate_password_hash('quint-master'))
+    user3 = UserStudent(email='irfan@gmail.com',
+                password=generate_password_hash('quint-master'),
+                student=Student.objects.first())
+    user3.save()
+
+def seedUserCompany():
+    UserCompany.drop_collection()
+    user1 = UserCompany(email='genturwt@quint.id',
+                password=generate_password_hash('quint-dev'),
+                company=Company.objects.first())
+    user1.save()
+
+    user2 = UserCompany(email='kenny@quint.id',
+                password=generate_password_hash('quint-front'),
+                company=Company.objects.first())
+    user2.save()
+
+    user3 = UserCompany(email='irfan@quint.id',
+                password=generate_password_hash('quint-master'),
+                company=Company.objects.first())
     user3.save()
 
 def seedOfficeLocation():
@@ -104,9 +123,10 @@ def seedApplication():
 class Seeder:
     def seed(self):
         seedStudent()
-        seedUser()
         seedOfficeLocation()
         seedContactPerson()
         seedJobPost()
-        seedCompany()
         seedApplication()
+        seedCompany()
+        seedUserStudent()
+        seedUserCompany()

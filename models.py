@@ -144,11 +144,23 @@ class Company(Document):
             'contact_person': derefer(self.contact_person)
         }
 
-class User(Document, UserMixin):
+class UserStudent(Document, UserMixin):
     email = StringField(unique=True, max_length=255)
     password = StringField(max_length=255)
     created_at = DateTimeField(default=datetime.datetime.now())
     student = ReferenceField('Student', reverse_delete_rule=NULLIFY)
+
+    def serialize(self):
+        return {
+            'email': self.email,
+            'created_at': self.created_at.isoformat()
+        }
+
+class UserCompany(Document, UserMixin):
+    email = StringField(unique=True, max_length=255)
+    password = StringField(max_length=255)
+    created_at = DateTimeField(default=datetime.datetime.now())
+    company = ReferenceField('Company', reverse_delete_rule=NULLIFY)
 
     def serialize(self):
         return {
