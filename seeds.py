@@ -57,7 +57,7 @@ def seedJobPost():
     schedule1 = InternshipSchedule(start_at=start(), end_at=end())
     jobPost1 = JobPost(role='Software Engineer Intern',
                     why_us='We are the best of the best',
-                    salary='18000000',
+                    salary=Salary(fee=450000, currency="$", term="month"),
                     technical_requirements=['PHP', 'CSS', 'Python'],
                     internship_schedule= schedule1,
                     tasks=['Create back-end systems', 'Create front-end systems'],

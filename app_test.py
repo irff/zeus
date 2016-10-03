@@ -170,6 +170,43 @@ class JobPostTest(unittest.TestCase):
         job_id = str(job.id)
         rv = self.helper.delete('/jobs/'+job_id)
 
+class CompanyTest(unittest.TestCase):
+    def setUp(self):
+        self.app = app.app.test_client()
+        self.helper = Helper()
+
+    def test_base(self):
+        rv = self.helper.get('/companies')
+        self.assertIn('success', rv.data)
+
+    def test_creation(self):
+        contact_person = str(ContactPerson.objects().first().id)
+        rv = self.helper.post('/companies', {
+            'name': 'Quint Dev Ops',
+            'industry': 'Technology',
+            'website': 'http://quint.id',
+            'logo_url': 'http://quint.id/companies/logo.png',
+            'contact_person': contact_person
+        })
+        self.assertIn('success', rv.data)
+
+    def test_modification(self):
+        contact_person = str(ContactPerson.objects().first().id)
+        company = Company.objects().first()
+        company_id = str(company.id)
+        rv = self.helper.post('/companies', {
+            'name': 'Quint Dev Ops v2',
+            'industry': 'Technology',
+            'website': 'http://quint.id',
+            'logo_url': 'http://quint.id/companies/logo.png',
+            'contact_person': contact_person
+        })
+        self.assertIn('success', rv.data)
+
+    def test_deletion(self):
+        company = Company.objects().first()
+        company_id = str(company.id)
+        rv = self.helper.delete('/companies/'+company_id)
 
 class ModelTest(unittest.TestCase):
     def setUp(self):

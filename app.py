@@ -123,7 +123,63 @@ def delete_job(job_id):
         'status': 'job successfully deleted'
     }), 200
 
+# COMPANY CRUD
+@app.route("/companies", methods=['GET'])
+def get_companies():
+    companies = Company.objects().all()
+    companies_json = []
+    for company in companies:
+        companies_json.append(company.serialize())
+    return jsonify({
+        'companies': companies_json,
+        'status': 'success'
+    }), 200
 
+@app.route("/companies", methods=['POST'])
+def add_company():
+    req = request.json
+    data = req
+    data['office_locations'] = []
+    for item_id in req['office_locations']:
+        off_loc = OfficeLocation.objects(id=item_id).first()
+        data['office_locations'].append(off_loc)
+
+    data['contact_person'] = ContactPerson.objects(id=data['contact_person']).first()
+    new_company = Company(**data)
+    new_company.save()
+
+    return jsonify({
+        'status': 'company profile successfully posted'
+    }), 201
+
+@app.route("/companies/<company_id>", methods=['PUT'])
+def modify_company(company_id):
+    req = request.json
+    data = req
+    data['office_locations'] = []
+    data['job_posts'] = []
+
+    for item_id in req['office_locations']:
+        off_loc = OfficeLocation.objects(id=item_id).first()
+        data['office_locations'].append(off_loc)
+
+    for item_id in req['job_posts']:
+        job_post = JobPost.objects(id=item_id).first()
+        data['job_posts'].append(job_post)
+    data['contact_person'] = ContactPerson.objects(id=data['contact_person']).first()
+    company = Company.objects(id=job_id).modify(**data)
+
+    return jsonify({
+        'company': company.serialize(),
+        'status': 'company successfully modified'
+    }), 200
+
+@app.route("/companies/<company_id>", methods=['DELETE'])
+def delete_company(company_id):
+    Company.objects(id=company_id).delete()
+    return jsonify({
+        'status': 'company successfully deleted'
+    }), 200
 
 # ROUTE TESTING
 @app.route("/")
