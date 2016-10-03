@@ -284,28 +284,6 @@ class CompanyTest(unittest.TestCase):
         company = Company.objects().first()
         company_id = str(company.id)
         rv = self.helper.delete('/companies/'+company_id)
-
-class ModelTest(unittest.TestCase):
-    def setUp(self):
-        self.app = app.app.test_client()
-        self.helper = Helper()
-
-    def test_student(self):
-        rv = self.helper.get_model('students')
-        self.assertIsNotNone(rv)
-
-    def test_user(self):
-        rv = self.helper.get_model('users')
-        self.assertIsNotNone(rv)
-
-    def test_company(self):
-        rv = self.helper.get_model('companies')
-        self.assertIsNotNone(rv)
-
-    def test_application(self):
-        rv = self.helper.get_model('applications')
-        self.assertIsNotNone(rv)
-
-
+        
 if __name__ == '__main__':
     unittest.main()

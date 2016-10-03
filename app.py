@@ -235,30 +235,5 @@ def delete_company(company_id):
         'status': 'company successfully deleted'
     }), 200
 
-# ROUTE TESTING
-@app.route("/")
-def hello():
-    return "Hello World!"
-
-@app.route("/students")
-def students():
-    students = Student.objects().first()
-    return jsonify(students.serialize()), 200
-
-@app.route("/users")
-def users():
-    users = UserStudent.objects().first()
-    return jsonify(users.serialize()), 200
-
-@app.route("/companies")
-def companies():
-    companies = Company.objects().first()
-    return jsonify(companies.serialize()), 200
-
-@app.route("/applications")
-def applications():
-    applications = Application.objects().first()
-    return jsonify(applications.serialize()), 200
-
 if __name__ == "__main__":
     app.run()
