@@ -105,11 +105,12 @@ def student_linkedin_authorized():
     user.save()
     
     login_user(user)
-    return jsonify({
-        'user_id': str(user.id),
-        'name': user.student.name,
-        'status': 'logged in successfully'
-    }), 200
+    return render_template('linkedin-redirect.html', user=user)
+    # return jsonify({
+    #     'user_id': str(user.id),
+    #     'name': user.student.name,
+    #     'status': 'logged in successfully'
+    # }), 200
 
 @app.route("/students/logout")
 def student_logout():

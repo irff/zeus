@@ -153,6 +153,7 @@ class UserStudent(Document, UserMixin):
     def serialize(self):
         return {
             'email': self.email,
+            'student': derefer(self.student),
             'created_at': self.created_at.isoformat()
         }
 
