@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+  <script>
+    var user = {
+      user_id: '{{str(user.id)}}',
+      name: '{{user.student.name}}',
+    };
+    window.opener.processLogin(user);
+    window.close();
+  </script>
+</body>
+</html>

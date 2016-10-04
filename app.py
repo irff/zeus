@@ -1,9 +1,9 @@
-from flask import Flask, jsonify, request, render_template, Response, redirect, url_for
+from flask import Flask, jsonify, request, render_template, Response, redirect, url_for, session
 from flask_mongoengine import MongoEngine
 from flask_dotenv import DotEnv
 from flask_login import LoginManager, login_user, login_required, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_oauthlib.provider import OAuth2Provider
+from flask_oauthlib.client import OAuth
 
 import json
 
@@ -19,9 +19,21 @@ app.secret_key = 'QuintDev'
 env.init_app(app)
 login_manager.init_app(app)
 db = MongoEngine(app)
-oauth = OAuth2Provider(app)
+oauth = OAuth()
+linkedin = oauth.remote_app('linkedin',
+    authorize_url='https://www.linkedin.com/oauth/v2/authorization',
+    access_token_url='https://www.linkedin.com/oauth/v2/accessToken',
+    consumer_key=env.app.config['LINKEDIN_ID'],
+    consumer_secret=env.app.config['LINKEDIN_SECRET'],
+    request_token_url=None
+)
 
 Seeder().seed()
+
+# LINKEDIN SETUP
+@linkedin.tokengetter
+def get_linkedin_token():
+    return session.get('linkedin_token')
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -58,6 +70,46 @@ def student_login():
             'name': user.student.name,
             'status': 'logged in successfully'
         }), 200
+
+
+@app.route("/students/login/linkedin")
+def student_linkedin_login():
+    return linkedin.authorize(callback=url_for('student_linkedin_authorized', _external=True))
+
+@app.route("/students/authorize/linkedin")
+def student_linkedin_authorized():
+    resp = linkedin.authorized_response()
+    if request.args['code'] is None:
+        return jsonify({
+            'status': 'access not granted by user'
+        })
+
+    session['linkedin_token'] = (resp['access_token'], '')
+
+    fields = '(id,first-name,picture-url,last-name,public-profile-url,headline,email-address)'
+    resp = linkedin.get(
+        'https://api.linkedin.com/v1/people/~:'+fields+'?format=json',
+    )
+
+    data = dict(
+        name = resp.data['firstName'] + ' ' + resp.data['lastName'],
+        photo_url = resp.data['pictureUrl'],
+        linkedin_url = resp.data['publicProfileUrl'],
+        headline = resp.data['headline']
+    )
+    student = Student(**data)
+    student.save()
+
+    email = resp.data['emailAddress']
+    user = UserStudent(email=email, student=student)
+    user.save()
+    
+    login_user(user)
+    return jsonify({
+        'user_id': str(user.id),
+        'name': user.student.name,
+        'status': 'logged in successfully'
+    }), 200
 
 @app.route("/students/logout")
 def student_logout():
@@ -134,6 +186,45 @@ def company_register():
             'status': 'email already exist'
         }), 403
 
+# STUDENT CRUD
+@app.route("/students", methods=['GET'])
+def get_students():
+    students = Student.objects().all()
+    students_json = []
+    for student in students:
+        students_json.append(student.serialize())
+    return jsonify({
+        'students': students_json,
+        'status': 'success'
+    }), 200
+
+@app.route("/students", methods=['POST'])
+def add_student():
+    data = request.json
+    new_student = Student(**data)
+    new_student.save()
+
+    return jsonify({
+        'status': 'company profile successfully posted'
+    }), 201
+
+@app.route("/students/<student_id>", methods=['PUT'])
+def modify_student(student_id):
+    data = request.json
+    student = Student.objects(id=student_id).modify(**data)
+
+    return jsonify({
+        'student': student.serialize(),
+        'status': 'student successfully modified'
+    }), 200
+
+@app.route("/students/<student_id>", methods=['DELETE'])
+def delete_student(student_id):
+    Student.objects(id=student_id).delete()
+    return jsonify({
+        'status': 'student successfully deleted'
+    }), 200
+
 # JOB POST CRUD
 @app.route("/jobs", methods=['GET'])
 def get_jobs():
@@ -178,7 +269,7 @@ def delete_job(job_id):
     }), 200
 
 # COMPANY CRUD
-@app.route("/companies", methods=['GET'])
+@app.route("/companies")
 def get_companies():
     companies = Company.objects().all()
     companies_json = []
@@ -221,7 +312,7 @@ def modify_company(company_id):
         job_post = JobPost.objects(id=item_id).first()
         data['job_posts'].append(job_post)
     data['contact_person'] = ContactPerson.objects(id=data['contact_person']).first()
-    company = Company.objects(id=job_id).modify(**data)
+    company = Company.objects(id=company_id).modify(**data)
 
     return jsonify({
         'company': company.serialize(),
