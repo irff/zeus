@@ -4,6 +4,7 @@ from flask_dotenv import DotEnv
 from flask_login import LoginManager, login_user, login_required, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_oauthlib.client import OAuth
+from flask_cors import CORS, cross_origin
 
 import json
 
@@ -19,6 +20,7 @@ app.secret_key = 'QuintDev'
 env.init_app(app)
 login_manager.init_app(app)
 db = MongoEngine(app)
+CORS(app)
 oauth = OAuth()
 linkedin = oauth.remote_app('linkedin',
     authorize_url='https://www.linkedin.com/oauth/v2/authorization',
