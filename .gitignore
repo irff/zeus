@@ -1,7 +1,3 @@
 *.pyc
 
-# Virtualenv
-bin/
-lib/
-local/
-pip-selfcheck.json
+venv/*
