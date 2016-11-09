@@ -1,0 +1,196 @@
+/students:
+	/login/linkedin: GET
+	/login: POST
+		request:
+			{
+				'email': string,
+				'password': string,
+				'remember': boolean
+			}
+		response:
+			{
+				'token': string,
+				'student_id': string
+			}
+	/<student_id>: GET
+		header: {
+			'token': string
+		}
+		request: {
+			'first_name' : string,
+			'last_name' : string,
+		    'major' : string,
+			'university': string,
+		    'resume_url' : string,
+		    'linkedin_url' : string,
+		    'photo_url' : string,
+		    'experiences': {
+		    	'achievement_num': integer,
+		    	'project_num': integer,
+		    	'work_num': integer
+		    }
+		    'headline' : string
+		}
+	/register: POST
+		request:
+			{
+				'email': string,
+				'password': string
+			}
+		response:
+			{
+				'token': string
+			}
+	/<student_id>/jobs: GET
+		header: {
+			'token': string
+		}
+		response: {
+			'jobs_id': [string]
+		}
+
+	/<student_id>/jobs: POST
+		header: {
+			'token': string
+		}
+		request: {
+			'job_id': string
+		}
+		response: {}
+		
+	/: POST
+	/<student_id>: PUT
+		header: {
+			'token': string
+		}
+		request: {
+			'first_name' : string,
+			'last_name' : string,
+		    'major' : string,
+			'university': string,
+		    'resume_url' : string,
+		    'linkedin_url' : string,
+		    'photo_url' : string,
+		    'experiences': {
+		    	'achievement_num': integer,
+		    	'project_num': integer,
+		    	'work_num': integer
+		    }
+		    'headline' : string
+		}
+		response: {}
+
+/jobs:
+	/: GET
+		request:
+			header: {
+				'token': string
+			}
+		response:
+		[{
+			'job_id': string,
+			'role': string,
+			'company': {
+				'name': string,
+				'logo_url': string,
+				'background_img_url': string,
+				'company_address': string,
+				'website': string,
+				'category': string
+			},
+			'why_us': string,
+			'salary': {
+				'fee': {
+					'minimal': integer,
+					'maximal': integer
+				},
+				'currency': string,
+				'term': string
+			},
+			'technical_requirements': [string],
+			'job_schedule': {
+				'start_at': datetime,
+				'end_at': datetime
+			},
+			'tasks': [string]
+			'skills_gained': [string]
+			'experiences_gained': [string]
+			'contact_person': {
+				'name': string,
+				'role': string,
+				'phone': string,
+				'email': string
+			},
+			'job_type': enum ['internship', 'full-time', 'part-time', 'fresh graduate'],
+			'created_at': datetime
+		}]
+
+/companies:
+	/login: POST
+		request:
+			{
+				'email': string,
+				'password': string,
+			}
+		response:
+			{
+				'token': string,
+				'company_id': string
+			}
+	/register: POST
+		request: {
+			'email': string,
+			'password': string
+		}
+		response: {
+			'token': string,
+		}
+	/: POST
+		header: {
+			'token': string
+		}
+		request: {
+			'name': string,
+			'logo_url': string,
+			'background_img_url': string,
+			'company_address': string,
+			'website': string,
+			'category': string
+		}
+		response: {
+			'company_id': string
+		}
+	/<company_id>/jobs: POST
+		header: {
+			'token': string
+		}
+		request: {
+			'role': string,
+			'why_us': string,
+			'salary': {
+				'fee': {
+					'minimal': integer,
+					'maximal': integer
+				},
+				'currency': string,
+				'term': string
+			},
+			'technical_requirements': [string],
+			'job_schedule': {
+				'start_at': datetime,
+				'end_at': datetime
+			},
+			'tasks': [string]
+			'skills_gained': [string]
+			'experiences_gained': [string]
+			'contact_person': {
+				'name': string,
+				'role': string,
+				'phone': string,
+				'email': string
+			},
+			'type': enum ['internship', 'full-time', 'part-time', 'fresh graduate']	
+		}
+		response: {
+			'job_id': string
+		}

@@ -5,8 +5,8 @@
 </head>
 <body>
   <script>
-    var user = {{user.serialize()|tojson|safe}}
-    window.opener.processLogin(user);
+    var data = {{data|tojson|safe}}
+    window.opener.processLogin(data);
     window.close();
   </script>
 </body>

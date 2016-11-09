@@ -40,22 +40,25 @@ paths:
           description: Successful response
           schema:
             $ref: "#/definitions/JobPost"
-  /students/{studentId}/apply/{jobId}:
+  /students/{studentId}/jobs:
     post:
       summary: Apply a student to the job
       parameters:
+        - in: body
+          required: true
+          name: jobId
+          schema:
+            type: object
+            properties:
+              jobId:
+                type: string
         - in: path
           name: studentId
-          required: true
-          type: string
-        - in: path
-          name: jobId
           required: true
           type: string
       responses:
         204:
           description: Successful response
-  /students/{studentId}/jobs:
     get:
       summary: Get all jobs that the specified student has applied
       parameters:
@@ -101,7 +104,7 @@ paths:
           schema:
             type: object
             properties:
-              username:
+              email:
                 type: string
               password:
                 type: string
@@ -114,6 +117,26 @@ paths:
               token:
                 type: string
               user_id:
+                type: string
+              name:
+                type: string
+        403:
+          description: Invalid credentials
+          
+  /students/login/linkedin:
+    get:
+      summary: login a student via linkedin authorization. To use this, open the endpoint in a new window, and later the new window will call parent.processLogin() function with the data of the student as the parameter
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              user_id:
+                type: string
+              name:
                 type: string
 definitions:
   User:

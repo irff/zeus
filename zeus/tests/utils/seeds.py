@@ -1,18 +1,23 @@
-from models import *
+from zeus.models import *
 from werkzeug.security import generate_password_hash, check_password_hash
-from mongoengine import ImageField
 
 import datetime
 
 def seedStudent():
     Student.drop_collection()
-    student1 = Student(name='Tri Ahmad Irfan',
+    student1 = Student(first_name='Tri',
+                   last_name='Ahmad Irfan',
                    major='Computer Science',
-                   school='University of Indonesia',
+                   university='University of Indonesia',
                    resume_url='http://google.com',
                    linkedin_url='http://google.com',
                    photo_url='http://google.com',
-                   headline='Back-end developer at Quint')
+                   headline='Back-end developer at Quint',
+                   experiences=dict(
+                        achievement_num=123,
+                        project_num=132,
+                        work_num=32
+                    ))
     student1.save()
 
 def seedUserStudent():
@@ -34,7 +39,7 @@ def seedUserStudent():
 
 def seedUserCompany():
     UserCompany.drop_collection()
-    user1 = UserCompany(email='genturwt@quint.id',
+    user1 = UserCompany(email='genturwt@gmail.com',
                 password=generate_password_hash('quint-dev'),
                 company=Company.objects.first())
     user1.save()
@@ -73,17 +78,30 @@ def seedJobPost():
         return ContactPerson.objects.first()
 
     JobPost.drop_collection()
-    schedule1 = InternshipSchedule(start_at=start(), end_at=end())
+    company = Company.objects.first()
+    schedule1 = JobSchedule(start_at=start(), end_at=end())
     jobPost1 = JobPost(role='Software Engineer Intern',
                     why_us='We are the best of the best',
-                    salary=Salary(fee=450000, currency="$", term="month"),
+                    salary=Salary(fee=Fee(minimal=100000, maximal=200000), currency="IDR", term="bulan"),
                     technical_requirements=['PHP', 'CSS', 'Python'],
-                    internship_schedule= schedule1,
+                    job_schedule= schedule1,
                     tasks=['Create back-end systems', 'Create front-end systems'],
                     skills_gained=['Leadership', 'Strong team-work'],
                     experiences_gained=['Get to know CEO of Quint', 'Meet investor'],
+                    company=company,
                     contact_person=cp())
     jobPost1.save()
+    jobPost2 = JobPost(role='Marketing Division',
+                    why_us='We are the best of the best',
+                    salary=Salary(fee=Fee(minimal=100000, maximal=200000), currency="IDR", term="bulan"),
+                    technical_requirements=['PHP', 'CSS', 'Python'],
+                    job_schedule= schedule1,
+                    tasks=['Create back-end systems', 'Create front-end systems'],
+                    skills_gained=['Leadership', 'Strong team-work'],
+                    experiences_gained=['Get to know CEO of Quint', 'Meet investor'],
+                    company=company,
+                    contact_person=cp())
+    jobPost2.save()
 
 def seedCompany():
     Company.drop_collection()
@@ -93,19 +111,14 @@ def seedCompany():
         return JobPost.objects.all()
     def cp():
         return ContactPerson.objects.first()
-    def photo():
-        photo = CompanyPhoto()
-        photo.img.put('tests/300.png')
-        return [photo]
 
     company1 = Company(name='Quint',
-                    office_locations=loc(),
-                    job_posts=job(),
-                    industry='Internship Third-Party',
-                    website='http://quint.dev',
                     logo_url='http://quint.dev/logo.jpg',
-                    photos=photo(),
-                    contact_person=cp())
+                    background_img_url='http://quint.dev/background.jpg',
+                    company_address='Jalan Haji Kodja No. 11, Kukel, Beji, Depok',
+                    website='http://quint.dev',
+                    category='Internship Third-Party'
+                    )
     company1.save()
 
 def seedApplication():
@@ -120,13 +133,12 @@ def seedApplication():
                             status='Accepted')
     application1.save()
 
-class Seeder:
-    def seed(self):
-        seedStudent()
-        seedOfficeLocation()
-        seedContactPerson()
-        seedJobPost()
-        seedApplication()
-        seedCompany()
-        seedUserStudent()
-        seedUserCompany()
+def seed():
+    seedStudent()
+    seedOfficeLocation()
+    seedContactPerson()
+    seedCompany()
+    seedJobPost()
+    seedApplication()
+    seedUserStudent()
+    seedUserCompany()
