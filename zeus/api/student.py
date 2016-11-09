@@ -47,7 +47,8 @@ def student_linkedin_authorized():
     )
 
     data = dict(
-        name = resp.data['firstName'] + ' ' + resp.data['lastName'],
+        first_name = resp.data['firstName'],
+        last_name = resp.data['lastName'],
         photo_url = resp.data['pictureUrl'],
         linkedin_url = resp.data['publicProfileUrl'],
         headline = resp.data['headline']
