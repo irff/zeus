@@ -7,7 +7,7 @@ class Application(Document):
     job_post = ReferenceField('JobPost', reverse_delete_rule=NULLIFY)
     student = ReferenceField('Student', reverse_delete_rule=NULLIFY)
     applied_at = DateTimeField(default=datetime.now)
-    status = StringField(max_length=255, choices=('Accepted', 'Rejected', 'Pending'), default='Pending')
+    status = StringField(max_length=255, choices=('Diterima', 'Ditolak', 'Resume sedang direview', 'Menunggu wawancara/tes', 'Hasil sedang direview'), default='Resume sedang direview')
 
 
     def serialize(self):

@@ -47,6 +47,7 @@ class JobPost(Document):
     company = ReferenceField('Company', reverse_delete_rule=NULLIFY, required=True)
     created_at = DateTimeField(default=datetime.now())
     job_type = StringField(choices=('internship', 'full-time', 'part-time', 'fresh graduate'), required=True)
+    category = StringField(choices=('business', 'product', 'engineering', 'design', 'marketing'))
 
     def serialize(self):
         return {

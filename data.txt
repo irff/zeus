@@ -16,7 +16,7 @@
 		header: {
 			'token': string
 		}
-		request: {
+		response: {
 			'first_name' : string,
 			'last_name' : string,
 		    'major' : string,
@@ -122,6 +122,7 @@
 				'email': string
 			},
 			'job_type': enum ['internship', 'full-time', 'part-time', 'fresh graduate'],
+			'category': string,
 			'created_at': datetime
 		}]
 
@@ -189,8 +190,23 @@
 				'phone': string,
 				'email': string
 			},
-			'type': enum ['internship', 'full-time', 'part-time', 'fresh graduate']	
+			'job_type': enum ['internship', 'full-time', 'part-time', 'fresh graduate'],
+			'category': string
 		}
 		response: {
 			'job_id': string
+		}
+
+/learning-resources:
+	/<job_category>: GET
+		response: {
+			'category' : [{
+				'name': string,
+				'contents': [
+					{
+						'name': string,
+						'url': string
+					}
+				]
+			}]
 		}

@@ -51,7 +51,10 @@ def student_linkedin_authorized():
         last_name = resp.data['lastName'],
         photo_url = resp.data['pictureUrl'],
         linkedin_url = resp.data['publicProfileUrl'],
-        headline = resp.data['headline']
+        headline = resp.data['headline'],
+        major = 'empty',
+        university = 'empty',
+        resume_url = 'http://www.empty.com'
     )
 
     email = resp.data['emailAddress']
@@ -112,7 +115,7 @@ def add_student():
         }, app.secret_key, algorithm='HS256')
         return jsonify({
             'student_id': str(user.student.id)
-        }), 204
+        }), 200
     except (InvalidQueryError, FieldDoesNotExist):
         return jsonify(), 400
 
@@ -127,14 +130,6 @@ def modify_student(student_id):
     
     except InvalidQueryError:
         return jsonify(), 400
-
-# @app.route("/students/<student_id>", methods=['DELETE'])
-# @auth.require_token
-# @auth.same_property('student_id')
-# def delete_student(student_id):
-#     UserStudent.objects(student=student_id).delete()
-#     Student.objects(id=student_id).delete()
-#     return jsonify(), 204
 
 @app.route("/students/<student_id>/jobs")
 @auth.require_token
@@ -156,7 +151,22 @@ def apply_job(student_id):
     company = JobPost.objects(id=job_id).first().company
     user_company = UserCompany.objects(company=company).only('email').first()
     student = Student.objects(id=student_id).first()
-    mailer.send_applied_job.delay(to=[user_company.email], data={
+    mailer.send_applied_job(to=[user_company.email], data={
         'resume_url': student.resume_url
     })
     return jsonify(), 204
+
+@app.route("/students/<student_id>")
+@auth.require_token
+@auth.same_property('student_id')
+def get_student(student_id):
+    student = Student.objects(id=student_id).first()
+    return jsonify(student.serialize()), 200
+
+# @app.route("/students/<student_id>", methods=['DELETE'])
+# @auth.require_token
+# @auth.same_property('student_id')
+# def delete_student(student_id):
+#     UserStudent.objects(student=student_id).delete()
+#     Student.objects(id=student_id).delete()
+#     return jsonify(), 204

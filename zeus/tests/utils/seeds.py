@@ -89,7 +89,8 @@ def seedJobPost():
                     skills_gained=['Leadership', 'Strong team-work'],
                     experiences_gained=['Get to know CEO of Quint', 'Meet investor'],
                     company=company,
-                    contact_person=cp())
+                    contact_person=cp(),
+                    job_type='internship')
     jobPost1.save()
     jobPost2 = JobPost(role='Marketing Division',
                     why_us='We are the best of the best',
@@ -100,7 +101,8 @@ def seedJobPost():
                     skills_gained=['Leadership', 'Strong team-work'],
                     experiences_gained=['Get to know CEO of Quint', 'Meet investor'],
                     company=company,
-                    contact_person=cp())
+                    contact_person=cp(),
+                    job_type='full-time')
     jobPost2.save()
 
 def seedCompany():
@@ -129,8 +131,7 @@ def seedApplication():
 
     Application.drop_collection()
     application1 = Application(job_post=job(),
-                            student=student(),
-                            status='Accepted')
+                            student=student())
     application1.save()
 
 def seed():
