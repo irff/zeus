@@ -6,13 +6,14 @@ from flask import render_template
 
 @celery.task
 def send_applied_job(**kwargs):
-	with app.app_context():
-		html = render_template('email.html', data=kwargs['data'])
-		recipients = kwargs['to']
-		subject = 'Notifikasi pendaftar Internship'
-		cc = ['genturwt@gmail.com']
-		message = Message(html=html, recipients=recipients, subject=subject, cc=cc)
-		mail.send(message)
+    with app.app_context():
+        data = kwargs['data']
+        body = render_template('email.html', **data)
+        recipients = kwargs['to']
+        subject = 'Notifikasi pendaftar Internship'
+        cc = ['firza@quint.id']
+        message = Message(html=body, recipients=recipients, subject=subject, cc=cc)
+        mail.send(message)
 
 # celery debugger
 def get_celery_worker_status():

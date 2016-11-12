@@ -4,6 +4,35 @@
 	<title></title>
 </head>
 <body>
-	<p>{{data.resume_url|safe}}</p>
+	<p>Dear {{company.name|safe}},</p>
+	 
+	<p>Berikut mahasiswa yang telah mendaftar sebagai intern via Quint dan siap untuk direview dengan tim recruiting {{company.name|safe}}:</p>
+
+	<p>
+		{{student.first_name|safe}} {{student.last_name|safe}} | {{student.major|safe}}, {{student.university|safe}}
+		<br>
+		{{student.headline|safe}}
+		<br>
+		Posisi: {{job_post.role|safe}}
+		<br>
+		{{student.experiences.achievement_num|safe}} prestasi | {{student.experiences.project_num|safe}} proyek | {{student.experiences.work_num|safe}} organisasi/pekerjaan
+		<br>
+		<a href="{{student.linkedin_url|safe}}">LinkedIn</a> | <a href="{{student.resume_url|safe}}">Resume</a>
+		<br>
+		E: {{student_mail|safe}}
+	</p>
+
+	<p>Mekanisme pengumuman hasil seleksi resume (profile) nya bisa diumumkan via email pendaftar dan men-cc notication@quint.id.</p>
+
+	<p>Kami mohon untuk diinformasikan terkait semua status pendaftar yang anda peroleh dari platform kami (contoh: lolos seleksi resume, sedang menunggu wawancara/tes, sedang mereview hasil wawancara/tes, diterima, ditolak) dengan cara mengemail ke notification@quint.id dengan subjek "{{company.name|safe}} - Status Pendaftar"</p>
+
+	<p>Terima kasih</p>
+
+	<p>-</p>
+	<p>
+		Quint - Quality internship for talented students, top universities, and qualified companies
+		<br>
+		Contact us: <a href="https://quint.id">quint.id</a> | <a href="quint.id/facebook">Facebook</a> | <a href="quint.id/line">LINE</a> | <a href="mailto:partnership@quint.id">partnership@quint.id</a>
+	</p>
 </body>
 </html>

@@ -148,11 +148,16 @@ def apply_job(student_id):
     job_id = request.json['job_id']
     application = Application(student=student_id, job_post=job_id)
     application.save()
+    job_post = JobPost.objects(id=job_id).first()
     company = JobPost.objects(id=job_id).first().company
     user_company = UserCompany.objects(company=company).only('email').first()
     student = Student.objects(id=student_id).first()
-    mailer.send_applied_job(to=[user_company.email], data={
-        'resume_url': student.resume_url
+    student.email = UserStudent.objects(student=student_id).first().email
+    mailer.send_applied_job.delay(to=[user_company.email], data={
+        'student_mail': student.email,
+        'student': student,
+        'company': company,
+        'job_post': job_post
     })
     return jsonify(), 204
 
