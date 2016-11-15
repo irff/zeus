@@ -28,7 +28,7 @@ class Student(Document):
     def serialize(self):
         return {
             'first_name'    : self.first_name,
-            'last_name'     : self.last_name,
+            'last_name'     : self.last_name,   
             'major'         : self.major,
             'university'    : self.university,
             'resume_url'    : self.resume_url,

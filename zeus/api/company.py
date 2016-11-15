@@ -65,7 +65,8 @@ def add_company():
             'company_id': str(user.company.id)
         }, app.secret_key, algorithm='HS256')
         return jsonify({
-            'company_id': str(new_company.id)
+            'company_id': str(new_company.id),
+            'token': token
         }), 201
     except (InvalidQueryError, FieldDoesNotExist):
         return jsonify(), 400
@@ -76,7 +77,9 @@ def add_company():
 def add_job(company_id):
     data = request.json
     contact_person = ContactPerson(**data['contact_person'])
-    job_schedule = JobSchedule(**data['job_schedule'])
+    start_at = datetime.strptime(data['job_schedule']['start_at'], '%d-%m-%Y')
+    end_at = datetime.strptime(data['job_schedule']['end_at'], '%d-%m-%Y')
+    job_schedule = JobSchedule(start_at=start_at, end_at=end_at)
     contact_person.save()
     data['contact_person'] = contact_person.id
     data['job_schedule'] = job_schedule
