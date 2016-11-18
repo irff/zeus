@@ -4,7 +4,7 @@ from util import derefer
 
 
 class Application(Document):
-    job_post = ReferenceField('JobPost', reverse_delete_rule=NULLIFY)
+    job_post = ReferenceField('JobPost', reverse_delete_rule=NULLIFY, unique_with='student')
     student = ReferenceField('Student', reverse_delete_rule=NULLIFY)
     applied_at = DateTimeField(default=datetime.now)
     status = StringField(max_length=255, choices=('Diterima', 'Ditolak', 'Resume sedang direview', 'Menunggu wawancara/tes', 'Hasil sedang direview'), default='Resume sedang direview')

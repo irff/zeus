@@ -3,6 +3,7 @@ import json
 from utils.seeds import *
 from zeus.models import *
 from zeus import app
+from zeus.utils import auth
 
 seed()
 class Helper():
@@ -27,8 +28,10 @@ class Helper():
             password=password
         )), content_type='application/json')
 
-    def get_model(self, model):
-        return self.app.get('/'+model)
+
+    def get_token_data(self, data):
+        token = json.loads(data)['token']
+        return auth.decode_token(token)
 
     def post(self, url, data, headers=None):
         return self.app.post(url, data=json.dumps(data), content_type='application/json', headers=headers)
@@ -42,51 +45,97 @@ class Helper():
     def put(self, url, data, headers=None):
         return self.app.put(url, data=json.dumps(data), content_type='application/json', headers=headers)
 
-class StudentAuthTest(unittest.TestCase):
 
+class StudentLoginTest(unittest.TestCase):
     def setUp(self):
         self.helper = Helper()
-        self.helper.setType('students')
+        self.endpoint = '/students/login'
+
+    def login(self, data):
+        return self.helper.post(self.endpoint, data);
 
     def test_login_with_valid_credential(self):
-        rv = self.helper.login('genturwt@gmail.com', 'quint-dev')
-        self.assertIn('token', rv.data)
+        rv = self.login({
+            'email': 'genturwt@gmail.com',
+            'password': 'quint-dev'
+        })
+        token = self.helper.get_token_data(rv.data)
+        self.assertIn('student_id', token)
+        self.assertIn('user_id', token)
+        self.assertIn('name', rv.data)
 
     def test_login_with_invalid_email(self):
-        rv = self.helper.login('ags@hmail.com', 'quint-dev')
+        rv = self.login({
+            'email': 'ags@hmail.com',
+            'password': 'quint-dev'
+        })
         self.assertEqual(403, rv.status_code)
+        self.assertIn('email', rv.data)
 
     def test_login_with_invalid_password(self):
-        rv = self.helper.login('genturwt@gmail.com', 'quint')
+        rv = self.login({
+            'email': 'genturwt@gmail.com',
+            'password': 'quint'
+        })
         self.assertEqual(403, rv.status_code)
+        self.assertIn('password', rv.data)
+
+    def test_login_with_empty_email(self):
+        rv = self.login({
+            'password': 'quint-dev'
+        })
+        self.assertEqual(400, rv.status_code)
+        self.assertIn('email', rv.data)
+
+    def test_login_with_empty_password(self):
+        rv = self.login({
+            'email': 'genturwt@gmail.com'
+        })
+        self.assertEqual(400, rv.status_code)
+        self.assertIn('password', rv.data)
+    
+class StudentRegisterTest(unittest.TestCase):
+    def setUp(self):
+        self.helper = Helper()
+        self.endpoint = '/students/register'
+
+    def register(self, data):
+        return self.helper.post(self.endpoint, data);
 
     def test_register_with_valid_credentials(self):
-        rv = self.helper.register('tri@quint.dev', 'quint')
+        rv = self.register({
+            'email': 'tri@quint.dev',
+            'password': 'testing-lalala'
+        })
         self.assertIn('token', rv.data)
         token = json.loads(rv.data)['token']
-        data = {
-            'name': 'Gentur Waskito T',
-            'major': 'Computer Science',
-            'school': 'UI - Indonesia',
-            'headline': 'Mata Pancing'
-        }
-        rv = self.helper.post('/students', data, {
-            'Authorization': 'Bearer ' + token
-        })
+        self.assertEqual(200, rv.status_code)
         
     def test_register_with_duplicate_email(self):
-        rv = self.helper.register('genturwt@gmail.com', 'quint')
+        rv = self.register({
+            'email': 'genturwt@gmail.com',
+            'password': 'quint'
+        })
         self.assertEqual(403, rv.status_code)
 
     def test_register_with_invalid_email(self):
-        rv = self.helper.register('kenny', 'quint')
+        rv = self.register({
+            'email': 'kenny',
+            'password': 'quint'
+        })
         self.assertEqual(403, rv.status_code)
 
-    def test_register_with_empty_credential(self):
-        rv = self.helper.register('quint@dev.it', '')
-        self.assertEqual(403, rv.status_code)
-        rv = self.helper.register('', 'quint')
-        self.assertEqual(403, rv.status_code)
+    def test_register_with_empty_password(self):
+        rv = self.register({
+            'email': 'quint@dev.it'
+        })
+        self.assertEqual(400, rv.status_code)
+
+    def test_register_with_empty_email(self):
+        rv = self.register({
+            'password': 'quint'
+        })
+        self.assertEqual(400, rv.status_code)
 
 class StudentTest(unittest.TestCase):
     def setUp(self):

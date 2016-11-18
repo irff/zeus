@@ -8,9 +8,11 @@ from flask import render_template
 def send_applied_job(**kwargs):
     with app.app_context():
         data = kwargs['data']
+        student = data['student']
+        job_post = data['job_post']
         body = render_template('email.html', **data)
         recipients = kwargs['to']
-        subject = 'Notifikasi pendaftar Internship'
+        subject = 'Quint - Pendaftar Internship ({0}, {1})'.format(student.name, job_post.role)
         cc = ['firza@quint.id']
         message = Message(html=body, recipients=recipients, subject=subject, cc=cc)
         mail.send(message)
@@ -28,7 +30,7 @@ def get_celery_worker_status():
         from errno import errorcode
         msg = "Error connecting to the backend: " + str(e)
         if len(e.args) > 0 and errorcode.get(e.args[0]) == 'ECONNREFUSED':
-            msg += ' Check that the RabbitMQ server is running.'
+            msg += ' Check that the Redis server is running.'
         d = { ERROR_KEY: msg }
     except ImportError as e:
         d = { ERROR_KEY: str(e)}

@@ -9,26 +9,36 @@ from zeus.utils.mailer import *
 import os
 import jwt
 
+def get_user(email, password):
+    user = UserStudent.objects(email=email).first()
+    if user == None:
+        raise ValueError('Invalid email')
+    if not user.check_password(password):
+        raise ValueError('Invalid password')
+    name = user.student.first_name if user.student != None else user.email.split('@')[0]
+    return (user, name)
+
 @app.route("/students/login", methods=['POST'])
 def student_login():
-    email = request.json['email']
-    password = request.json['password']
-
-    user = UserStudent.objects(email=email).first()
-    if user == None or not user.check_password(password):
-        return jsonify({}), 403
-    else:
+    try:
+        email = request.json['email']
+        password = request.json['password']
+        user, name = get_user(email, password)
         student_id = str(user.student.id) if user.student != None else ''
-        token = jwt.encode({
-            'exp': datetime.utcnow() + timedelta(days=365),
+        token = auth.create_token({
             'user_id': str(user.id),
             'student_id': student_id
-        }, app.secret_key, algorithm='HS256')
+        })
         return jsonify({
             'token': token,
-            'student_id': student_id
+            'student_id': student_id,
+            'name': name
         }), 200
-
+    except ValueError as e:
+        return jsonify({'message': e.args}), 403
+    except KeyError as e:
+        message = 'Field cannot be empty: {0}'.format(e.args)
+        return jsonify({'message': message}), 400
 
 @app.route("/students/login/linkedin")
 def student_linkedin_login():
@@ -83,12 +93,12 @@ def student_register():
         user = UserStudent(email=email)
         user.set_password(password)
         user.save()
-        token = jwt.encode({
-            'exp': datetime.utcnow() + timedelta(days=365),
+        token = auth.create_token({
             'user_id': str(user.id)
-        }, app.secret_key, algorithm='HS256')
+        })
         return jsonify({
             'token': token,
+            'user_id': str(user.id)
         }), 200
     except NotUniqueError:
         return jsonify({
@@ -96,6 +106,9 @@ def student_register():
         }), 403
     except ValidationError:
         return jsonify(), 403
+    except KeyError as e:
+        message = 'Field cannot be empty: {0}'.format(e.args)
+        return jsonify({'message': message}), 400
 
 @app.route("/students", methods=['POST'])
 @auth.require_token

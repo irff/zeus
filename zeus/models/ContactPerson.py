@@ -5,7 +5,7 @@ class ContactPerson(Document):
     name = StringField(max_length=255)
     role = StringField(max_length=255)
     phone = StringField(max_length=255)
-    email = EmailField()
+    email = EmailField(unique=True)
 
     def serialize(self):
         return {
