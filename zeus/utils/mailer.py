@@ -14,7 +14,7 @@ def send_applied_job(**kwargs):
         recipients = kwargs['to']
         subject = 'Quint - Pendaftar Internship ({0}, {1})'.format(student.first_name + ' ' + student.last_name, job_post.role)
         cc = ['firza@quint.id']
-        message = Message(html=body, recipients=recipients, subject=subject, cc=cc)
+        message = Message(html=body, recipients=recipients, subject=subject, bcc=cc)
         mail.send(message)
 
 # celery debugger
