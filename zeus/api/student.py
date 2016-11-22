@@ -163,10 +163,10 @@ def apply_job(student_id):
     application.save()
     job_post = JobPost.objects(id=job_id).first()
     company = JobPost.objects(id=job_id).first().company
-    user_company = UserCompany.objects(company=company).only('email').first()
+    email = job_post.contact_person.email
     student = Student.objects(id=student_id).first()
     student.email = UserStudent.objects(student=student_id).first().email
-    mailer.send_applied_job.delay(to=[user_company.email], data={
+    mailer.send_applied_job.delay(to=[email], data={
         'student_mail': student.email,
         'student': student,
         'company': company,
