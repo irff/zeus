@@ -12,7 +12,7 @@ def send_applied_job(**kwargs):
         job_post = data['job_post']
         body = render_template('email.html', **data)
         recipients = kwargs['to']
-        subject = 'Quint - Pendaftar Internship ({0}, {1})'.format(student.first_name + student.last_name, job_post.role)
+        subject = 'Quint - Pendaftar Internship ({0}, {1})'.format(student.first_name + ' ' + student.last_name, job_post.role)
         cc = ['firza@quint.id']
         message = Message(html=body, recipients=recipients, subject=subject, cc=cc)
         mail.send(message)

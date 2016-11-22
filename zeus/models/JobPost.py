@@ -45,7 +45,6 @@ class JobPost(Document):
     experiences_gained = ListField(StringField(max_length=255))
     contact_person = ReferenceField('ContactPerson', reverse_delete_rule=NULLIFY, required=True)
     company = ReferenceField('Company', reverse_delete_rule=NULLIFY, required=True)
-    created_at = DateTimeField(default=datetime.now())
     job_type = StringField(choices=('internship', 'full-time', 'part-time', 'fresh graduate'), required=True)
     category = StringField(choices=('business', 'product', 'engineering', 'design', 'marketing'))
 
@@ -63,6 +62,6 @@ class JobPost(Document):
             'contact_person': derefer(self.contact_person),
             'company': derefer(self.company),
             'job_type': self.job_type,
-            'created_at': self.created_at
+            'created_at': self.id.generation_time.isoformat()
         }
 

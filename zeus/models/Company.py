@@ -37,7 +37,6 @@ class UserCompany(Document):
     email = StringField(unique=True, max_length=255, required=True)
     password = StringField(max_length=255, required=True)
     company = ReferenceField('Company', reverse_delete_rule=NULLIFY)
-    created_at = DateTimeField(default=datetime.now())
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
@@ -50,7 +49,7 @@ class UserCompany(Document):
         return {
             'email': self.email,
             'company': derefer(self.company),
-            'created_at': self.created_at.isoformat()
+            'created_at': self.id.generation_time.isoformat()
         }
 
 
