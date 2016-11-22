@@ -76,12 +76,14 @@ def add_company():
 @auth.same_property('company_id')
 def add_job(company_id):
     data = request.json
-    contact_person = ContactPerson(**data['contact_person'])
+    contact_person = ContactPerson.objects(email=data['contact_person']['email']).first()
+    if(contact_person == None):
+        contact_person = ContactPerson(**data['contact_person'])
+        contact_person.save()
     start_at = datetime.strptime(data['job_schedule']['start_at'], '%d-%m-%Y')
     end_at = datetime.strptime(data['job_schedule']['end_at'], '%d-%m-%Y')
     job_schedule = JobSchedule(start_at=start_at, end_at=end_at)
-    contact_person.save()
-    data['contact_person'] = contact_person.id
+    data['contact_person'] = contact_person
     data['job_schedule'] = job_schedule
     job = JobPost(**data)
     job.company = Company.objects(id=company_id).first()
