@@ -12,7 +12,7 @@ def get_jobs():
     jobs_json = []
     for job in jobs:
         jobs_json.append(job.serialize())
-    return jsonify(jobs_json), 200
+    return jsonify(jobs_json.reverse()), 200
 
 # @app.route("/jobs", methods=['POST'])
 # @auth.require_token
