@@ -8,17 +8,18 @@ from zeus.utils import auth
 @app.route("/jobs", methods=['GET'])
 @auth.require_token
 def get_jobs():
-    jobs = JobPost.objects().all()
+    jobs = JobPost.objects
     jobs_json = []
     for job in jobs:
         jobs_json.append(job.serialize())
+    jobs_json = sorted(jobs_json, key=lambda job: job['created_at'], reverse=True)
     return jsonify(jobs_json), 200
 
 # @app.route("/jobs", methods=['POST'])
 # @auth.require_token
 # @auth.privilege('company')
 # def add_job():
-#     data = request.json
+#     data = request.jsonviu
 #     data['internship_schedule'] = InternshipSchedule(**data['internship_schedule'])
 #     new_job = JobPost(**data)
 #     new_job.save()
