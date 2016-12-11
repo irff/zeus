@@ -4,12 +4,13 @@ from mongoengine import connect
 from celery import Celery
 from flask_mail import Mail
 from flask_cors import CORS
+from tests.utils import seeds
 
 app = Flask('Quint API', template_folder='zeus/html')
 env = DotEnv()
 env.init_app(app)
 app.secret_key = 'QuintDev'
-CORS(app, origins=['https://*.quint.id', 'https://quint.id'])
+CORS(app)
 
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
 app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
@@ -25,8 +26,8 @@ app.config['TESTING'] = True
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
-connect('quint')
-
+connect('quint-staging')
+seeds.seed()
 mail = Mail(app)
 
 import api.student
