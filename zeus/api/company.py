@@ -1,10 +1,9 @@
 from flask import request, jsonify
 from zeus import app
 from zeus.models import *
-from zeus.utils.linkedin_api import linkedin
 from datetime import *
 from zeus.utils import auth
-import jwt
+
 
 @app.route("/companies/login", methods=['POST'])
 def company_login():
@@ -12,19 +11,20 @@ def company_login():
     password = request.json['password']
 
     user = UserCompany.objects(email=email).first()
-    if user == None or not user.check_password(password):
+    if user is None or not user.check_password(password):
         return jsonify({}), 403
     else:
-        company_id = str(user.company.id) if user.company != None else ''
-        token = jwt.encode({
+        company_id = str(user.company.id) if user.company is not None else ''
+        token = auth.create_token({
             'exp': datetime.utcnow() + timedelta(days=365),
             'user_id': str(user.id),
             'company_id': company_id
-        }, app.secret_key, algorithm='HS256')
+        })
         return jsonify({
             'token': token,
             'company_id': company_id
         }), 200
+
 
 @app.route("/companies/register", methods=['POST'])
 def company_register():
@@ -34,10 +34,10 @@ def company_register():
         user = UserCompany(email=email)
         user.set_password(password)
         user.save()
-        token = jwt.encode({
+        token = auth.create_token({
             'exp': datetime.utcnow() + timedelta(days=365),
             'user_id': str(user.id)
-        }, app.secret_key, algorithm='HS256')
+        })
         return jsonify({
             'token': token,
         }), 200
@@ -47,6 +47,7 @@ def company_register():
         }), 403
     except ValidationError:
         return jsonify(), 403
+
 
 @app.route("/companies", methods=['POST'])
 @auth.require_token
@@ -59,17 +60,18 @@ def add_company():
         new_company.save()
         user.company = new_company
         user.save()
-        token = jwt.encode({
+        token = auth.create_token({
             'exp': datetime.utcnow() + timedelta(days=365),
             'user_id': str(user.id),
             'company_id': str(user.company.id)
-        }, app.secret_key, algorithm='HS256')
+        })
         return jsonify({
             'company_id': str(new_company.id),
             'token': token
         }), 201
     except (InvalidQueryError, FieldDoesNotExist):
         return jsonify(), 400
+
 
 @app.route("/companies/<company_id>/jobs", methods=['POST'])
 @auth.require_token

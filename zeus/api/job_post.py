@@ -1,8 +1,6 @@
-from flask import request, jsonify
+from flask import jsonify
 from zeus import app
 from zeus.models import *
-from zeus.utils.linkedin_api import linkedin
-from datetime import *
 from zeus.utils import auth
 
 @app.route("/jobs", methods=['GET'])

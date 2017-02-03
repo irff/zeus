@@ -11,19 +11,19 @@ env.init_app(app)
 app.secret_key = 'QuintDev'
 CORS(app, origins=['https://*.quint.id', 'https://quint.id'])
 
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+app.config['CELERY_BROKER_URL'] = env.app.config['REDIS_CELERY_URL']
+app.config['CELERY_RESULT_BACKEND'] = env.app.config['REDIS_CELERY_URL']
 
-app.config['MAIL_SERVER'] = 'smtp.zoho.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'notification@quint.id'
-app.config['MAIL_PASSWORD'] = '@x8Wh@MZ'
-app.config['MAIL_DEFAULT_SENDER'] = ('Notification from Quint', 'notification@quint.id')
-app.config['TESTING'] = True
+app.config['MAIL_SERVER'] = env.app.config['MAIL_SERVER']
+app.config['MAIL_PORT'] = env.app.config['MAIL_PORT']
+app.config['MAIL_USE_TLS'] = env.app.config['MAIL_USE_TLS']
+app.config['MAIL_USERNAME'] = env.app.config['MAIL_USERNAME']
+app.config['MAIL_PASSWORD'] = env.app.config['MAIL_PASSWORD']
+app.config['MAIL_DEFAULT_SENDER'] = (env.app.config['MAIL_SENDER_NAME'], env.app.config['MAIL_USERNAME'])
+app.config['TESTING'] = env.app.config['TESTING']
 
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-celery.conf.update(app.config)
+celery.conf.update(env.app.config)
 
 connect('quint')
 
