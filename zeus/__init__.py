@@ -25,7 +25,7 @@ app.config['TESTING'] = env.app.config['TESTING']
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(env.app.config)
 
-connect('quint')
+connect(env.app.config['MONGODB_DB'])
 
 mail = Mail(app)
 

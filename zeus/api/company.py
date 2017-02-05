@@ -92,7 +92,7 @@ def add_job(company_id):
     job.save()
     return jsonify({
         'job_id': str(job.id)
-    }), 204
+    }), 200
 # @app.route("/companies")
 # @auth.require_token
 # def get_companies():

@@ -75,10 +75,10 @@ def student_linkedin_authorized():
         user = UserStudent(email=email, student=student)
         user.set_password(os.urandom(12))
         user.save()
-    token = jwt.encode({
+    token = auth.create_token({
         'exp': datetime.utcnow() + timedelta(minutes=30),
         'student_id': str(user.student.id)
-    }, app.secret_key, algorithm='HS256')
+    })
     data = {
         'student_id': str(user.student.id),
         'token': token
