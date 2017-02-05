@@ -7,7 +7,6 @@ from zeus.utils import auth
 from zeus.utils import mailer
 from zeus.utils.mailer import *
 import os
-import jwt
 
 def get_user(email, password):
     user = UserStudent.objects(email=email).first()
@@ -121,13 +120,14 @@ def add_student():
         student.save()
         user.student = student
         user.save()
-        token = jwt.encode({
+        token = auth.create_token({
             'exp': datetime.utcnow() + timedelta(days=365),
             'user_id': str(user.id),
             'student_id': str(user.student.id)
-        }, app.secret_key, algorithm='HS256')
+        })
         return jsonify({
-            'student_id': str(user.student.id)
+            'student_id': str(user.student.id),
+            'token': token
         }), 200
     except (InvalidQueryError, FieldDoesNotExist):
         return jsonify(), 400
