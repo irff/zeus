@@ -7,76 +7,137 @@ info:
 
 # Describe your paths here
 paths:
-  /users:
+  /jobs:
     get:
-      # Describe this verb here. Note: you can use markdown
-      description: |
-        Gets `User` objects.
-        Optional query param of **size** determines
-        size of returned array
-      # This is array of GET operation parameters:
+      summary: Get all jobs
       parameters:
-        # An example parameter that is in query and is required
-        -
-          name: size
-          in: query
-          description: Size of array
-          required: true
-          type: number
-          format: double
-      # Expected responses for this operation:
+        - in: query
+          name: fields
+          description: |
+            The list of fields that wants to be retrieved.
+            By default, all fields will be returned.
+          type: array
+          required: false
+          items:
+            type: string
       responses:
-        # Response code
         200:
           description: Successful response
-          # A schema describing your response object.
-          # Use JSON Schema format
           schema:
-            title: ArrayOfUsers
             type: array
-            items:
-              title: User
-              type: object
-              properties:
-                name:
-                  type: string
-                single:
-                  type: boolean
-  /companies:
+            items: 
+              $ref: "#/definitions/JobPost"
+  /jobs/{jobId}:
     get:
-      # Describe this verb here. Note: you can use markdown
-      description: |
-        Gets `Company` objects.
-        Optional query param of **size** determines
-        size of returned array
-      # This is array of GET operation parameters:
+      summary: Get specific job details
       parameters:
-        # An example parameter that is in query and is required
-        -
-          name: size
-          in: query
-          description: Size of array
+        - in: path
+          name: jobId
           required: true
-          type: number
-          format: double
-      # Expected responses for this operation:
+          type: string
       responses:
-        # Response code
         200:
           description: Successful response
-          # A schema describing your response object.
-          # Use JSON Schema format
           schema:
-            title: ArrayOfCompanies
+            $ref: "#/definitions/JobPost"
+  /students/{studentId}/jobs:
+    post:
+      summary: Apply a student to the job
+      parameters:
+        - in: body
+          required: true
+          name: jobId
+          schema:
+            type: object
+            properties:
+              jobId:
+                type: string
+        - in: path
+          name: studentId
+          required: true
+          type: string
+      responses:
+        204:
+          description: Successful response
+    get:
+      summary: Get all jobs that the specified student has applied
+      parameters:
+        - in: path
+          name: studentId
+          required: true
+          type: string
+        - in: query
+          name: fields
+          description: |
+            The list of fields that wants to be retrieved.
+            By default, all fields will be returned.
+          type: array
+          required: false
+          items:
+            type: string
+      responses:
+        200:
+          description: Successful response
+          schema:
             type: array
             items:
-              title: Person
-              type: object
-              properties:
-                name:
-                  type: string
-                single:
-                  type: boolean
+              $ref: "#/definitions/Application"
+  /students/register:
+    post:
+      summary: Register a student
+      parameters:
+        - in: body
+          name: studentData
+          required: true
+          schema:
+            $ref: "#/definitions/Student"
+      responses:
+        204:
+          description: Successful response
+  /students/login:
+    post:
+      summary: Login a student
+      parameters:
+        - in: body
+          name: credentials
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              user_id:
+                type: string
+              name:
+                type: string
+        403:
+          description: Invalid credentials
+          
+  /students/login/linkedin:
+    get:
+      summary: login a student via linkedin authorization. To use this, open the endpoint in a new window, and later the new window will call parent.processLogin() function with the data of the student as the parameter
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              user_id:
+                type: string
+              name:
+                type: string
 definitions:
   User:
     type: object

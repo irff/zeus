@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+  <script>
+    var data = {{data|tojson|safe}}
+    window.opener.processLogin(data);
+    window.close();
+  </script>
+</body>
+</html>

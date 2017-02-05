@@ -1,7 +1,4 @@
 *.pyc
-
-# Virtualenv
-bin/
-lib/
-local/
-pip-selfcheck.json
+.idea/*
+.env
+venv/*
