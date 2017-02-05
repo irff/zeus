@@ -90,7 +90,8 @@ def seedJobPost():
                     experiences_gained=['Get to know CEO of Quint', 'Meet investor'],
                     company=company,
                     contact_person=cp(),
-                    job_type='internship')
+                    job_type='internship',
+                    is_open=True)
     jobPost1.save()
     jobPost2 = JobPost(role='Marketing Division',
                     why_us='We are the best of the best',
@@ -102,7 +103,8 @@ def seedJobPost():
                     experiences_gained=['Get to know CEO of Quint', 'Meet investor'],
                     company=company,
                     contact_person=cp(),
-                    job_type='full-time')
+                    job_type='full-time',
+                    is_open=True)
     jobPost2.save()
 
 def seedCompany():
