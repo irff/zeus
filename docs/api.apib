@@ -1,0 +1,817 @@
+FORMAT: 1A
+HOST: https://quint.id
+
+# Quint API
+
+API for Quint website.
+
+
+## Group Students
+
+Resource related to students in the API.
+
+## Student Login [/students/login]
+
+### Login via Linkedin [GET /students/login/linkedin]
+
+Login a student via Linkedin authorization. To use this, open the endpoint in a new window, and later the new window will call parent.processLogin() function with the data of the student as the parameter.
+
++ Response 200
+
+### Login [POST]
+
+Login a student.
+
++ email (string) - Email to login by student.
++ password (string) - Password to login by student.
++ remember (boolean) - Remember me option.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "email": string,
+                "password": string,
+                "remember": boolean
+            }
+            
+    + Schema
+
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "remember": {
+                        "type": "boolean"
+                    }
+                }
+            }
+
+
++ Response 200 (application/json)
+
+        {
+            "token": string,
+            "student_id": string
+        }
+
++ Response 403 (application/json)
+
+        {
+            "message": ["Invalid email"]
+        }
+
++ Response 400 (application/json)
+
+        {
+            "message": "Field cannot be empty: ('email',)"
+        }
+
+## Student Registration [/students/register]
+
+### Register [POST]
+
+Register a student.
+
++ email (string) - Email to register by student.
++ password (string) - Password to register by student.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "email": string,
+                "password": string
+            }
+            
+    + Schema
+
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                }
+            }
+
++ Response 201 (application/json)
+
+        {
+            "token": string
+        }
+
++ Response 403 (application/json)
+
+        {
+            "status": "email already exist"
+        }
+        
++ Response 403
+        
++ Response 400 (application/json)
+
+        {
+            "message": "Field cannot be empty: ('email',)"
+        }
+
+## Student Profile [/students/{student_id}]
+
++ Parameters
+    + student_id: 1 (required, number string) - ID of the student in form of a number in string
+
+### Create Profile [POST /students]
+
+Create a specific student profile.
+
++ first_name (string) - First name of the student.
++ last_name (string) - Last name of the student.
++ major (string) - Major of the student.
++ university (string) - University that the student goes or went.
++ resume_url (string) - URL of student's resume.
++ linkedin_url (string) - URL of student's Linkedin profile.
++ photo_url (string) - URL of student's photo.
++ experiences (object) - Experiences that the student has.
++ headline (string) - Headline of the student.
+
++ Request (application/json)
+
+    + Headers
+
+            Token: string
+            
+    + Body
+    
+            {
+                "first_name": string,
+                "last_name": string,
+                "major": string,
+                "university": string,
+                "resume_url": string,
+                "linkedin_url": string,
+                "photo_url": string,
+                "experiences": {
+                    "achievement_num": integer,
+                    "project_num": integer,
+                    "work_num": integer
+                },
+                "headline": string
+            }
+            
+    + Schema
+
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "major": {
+                        "type": "string"
+                    },
+                    "university": {
+                        "type": "string"
+                    },
+                    "resume_url": {
+                        "type": "string"
+                    },
+                    "linkedin_url": {
+                        "type": "string"
+                    },
+                    "photo_url": {
+                        "type": "string"
+                    },
+                    "experiences": {
+                        "type": "object",
+                        "properties": {
+                            "achievement_num": {
+                                "type": "integer"
+                            },
+                            "project_num": {
+                                "type": "integer"
+                            },
+                            "work_num": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "headline": {
+                        "type": "string"
+                    }
+                }
+            }
+            
++ Response 200 (application/json)
+
+        {
+            "student_id": string
+        }
+        
++ Response 400
+
+### Get Profile [GET]
+
+Get a specific student profile.
+
++ Request (application/json)
+
+    + Headers
+
+            Token: string
+
++ Response 200 (application/json)
+
+        {
+            "first_name": string,
+            "last_name": string,
+            "major": string,
+            "university": string,
+            "resume_url": string,
+            "linkedin_url": string,
+            "photo_url": string,
+            "experiences": {
+                "achievement_num": integer,
+                "project_num": integer,
+                "work_num": integer
+            },
+            "headline": string
+        }
+
+### Edit Profile [PUT]
+
+Edit a specific student profile.
+
++ first_name (string) - First name of the student.
++ last_name (string) - Last name of the student.
++ major (string) - Major of the student.
++ university (string) - University that the student goes or went.
++ resume_url (string) - URL of student's resume.
++ linkedin_url (string) - URL of student's Linkedin profile.
++ photo_url (string) - URL of student's photo.
++ experiences (array[integer]) - List of number experiences that the student has.
++ headline (string) - Headline of the student.
+
++ Request (application/json)
+
+    + Headers
+
+            Token: string
+            
+    + Body
+    
+            {
+                "first_name": string,
+                "last_name": string,
+                "major": string,
+                "university": string,
+                "resume_url": string,
+                "linkedin_url": string,
+                "photo_url": string,
+                "experiences": {
+                    "achievement_num": integer,
+                    "project_num": integer,
+                    "work_num": integer
+                },
+                "headline": string
+            }
+        
+    + Schema
+
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "major": {
+                        "type": "string"
+                    },
+                    "university": {
+                        "type": "string"
+                    },
+                    "resume_url": {
+                        "type": "string"
+                    },
+                    "linkedin_url": {
+                        "type": "string"
+                    },
+                    "photo_url": {
+                        "type": "string"
+                    },
+                    "experiences": {
+                        "type": "object",
+                        "properties": {
+                            "achievement_num": {
+                                "type": "integer"
+                            },
+                            "project_num": {
+                                "type": "integer"
+                            },
+                            "work_num": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "headline": {
+                        "type": "string"
+                    }
+                }
+            }
+
++ Response 204
+
++ Response 400
+
+## Student Job List [/students/{student_id}/jobs]
+
++ Parameters
+    + student_id: 1 (required, number string) - ID of the student in form of a number in string
+
+### List Jobs Applied [GET]
+
+Get all jobs that the specified student has applied.
+
++ Request (application/json)
+
+    + Headers
+
+            Token: string
+
++ Response 200 (application/json)
+
+        {
+            "jobs_id": [string]
+        }
+
+### Apply Job [POST]
+
+Apply a student to the job.
+
++ job_id (string) - The id of job that the student want to apply.
+
++ Request (application/json)
+
+    + Headers
+
+            Token: string
+            
+    + Body
+
+            {
+                "job_id": string
+            }
+            
+    + Schema
+
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "job_id": {
+                        "type": "string"
+                    }
+                }
+            }
+
++ Response 204
+
+## Group Jobs
+
+Resource related to jobs in the API.
+
+## Jobs [/jobs]
+
+### List All Jobs [GET]
+
+Get all jobs.
+
++ Request (application/json)
+
+    + Headers
+
+            Token: string
+
++ Response 200 (application/json)
+
+        [
+            {
+                "job_id": string,
+                "role": string,
+                "company": {
+                    "name": string,
+                    "logo_url": string,
+                    "background_img_url": string,
+                    "company_address": string,
+                    "website": string,
+                    "category": string
+                },
+                "why_us": string,
+                "salary": {
+                    "fee": {
+                        "minimal": integer,
+                        "maximal": integer
+                    },
+                    "currency": string,
+                    "term": string
+                },
+                "technical_requirements": [string],
+                "job_schedule": {
+                    "start_at": datetime,
+                    "end_at": datetime
+                },
+                "tasks": [string]
+                "skills_gained": [string]
+                "experiences_gained": [string]
+                "contact_person": {
+                    "name": string,
+                    "role": string,
+                    "phone": string,
+                    "email": string
+                },
+                "job_type": enum [
+                    "internship",
+                    "full-time",
+                    "part-time",
+                    "fresh graduate"
+                ],
+                "category": string,
+                "created_at": datetime
+            }
+        ]
+
+## Group Companies
+
+Resource related to companies in the API.
+
+## Company Login [/companies/login]
+
+### Login [POST]
+
+Login a company.
+
++ email (string) - Email to login by company.
++ password (string) - Password to login by company.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "email": string,
+                "password": string,
+            }
+            
+    + Schema
+
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                }
+            }
+
++ Response 200 (application/json)
+
+        {
+            "token": string,
+            "company_id": string
+        }
+    
++ Response 403
+
+## Company Registration [/companies/register]
+
+### Register [POST]
+
+Register a company.
+
++ email (string) - Email to register by company.
++ password (string) - Password to register by company.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "email": string,
+                "password": string,
+            }
+            
+    + Schema
+
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                }
+            }
+
++ Response 200 (application/json)
+
+        {
+            "token": string
+        }
+        
++ Response 403 (application/json)
+
+        {
+            "status": "email already exist"
+        }
+        
++ Response 403
+
+## Company Profile [/companies]
+
+### Create Profile [POST]
+
+Create a specific company profile.
+
++ name (string) - Name of the company.
++ logo_url (string) - URL for the company logo.
++ background_img_url (string) - URL for the background image.
++ company_address (string) - Address of the company.
++ website (string) - Website address of the company.
++ category (string) - Category of the company.
+
++ Request (application/json)
+
+    + Headers
+
+            Token: string
+
+    + Body
+    
+            {
+                "name": string,
+                "logo_url": string,
+                "background_img_url": string,
+                "company_address": string,
+                "website": string,
+                "category": string
+            }
+            
+    + Schema
+
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "logo_url": {
+                        "type": "string"
+                    },
+                    "background_img_url": {
+                        "type": "string"
+                    },
+                    "company_address": {
+                        "type": "string"
+                    },
+                    "website": {
+                        "type": "string"
+                    },
+                    "category": {
+                        "type": "string"
+                    }
+                }
+            }
+
++ Response 201 (application/json)
+
+        {
+            "company_id": string,
+            "token": string
+        }
+        
++ Response 400
+
+## Company Job Post [/companies/{company_id}/jobs]
+
++ Parameters
+    + company_id: 1 (required, number string) - ID of the company in form of a number in string
+
+### Create Job Post [POST]
+
+Create a job post for the specific company.
+
++ role (string) - Role of the job.
++ why_us (string) - Reason to choose the company as well as the job.
++ salary (object) - Salary that will be got.
++ technical_requirements (array[string]) - List of technical requirements for applying the job.
++ job_schedule (object) - Schedule of the job.
++ tasks (array[string]) - List of the tasks and responsibilities that will be got.
++ skills_gained (array[string]) - List of the skills that will be gained.
++ experiences_gained (array[string]) - List of the experiences that will be gained.
++ contact_person (object) - Contact person for the job.
++ job_type (enum) - Type of the job.
++ category (string) - Category of the job.
+
++ Request (application/json)
+
+    + Headers
+
+            Token: string
+            
+    + Body
+
+            {
+                "role": string,
+                "why_us": string,
+                "salary": {
+                    "fee": {
+                        "minimal": integer,
+                        "maximal": integer
+                    },
+                    "currency": string,
+                    "term": string
+                },
+                "technical_requirements": [string],
+                "job_schedule": {
+                    "start_at": string,
+                    "end_at": string
+                },
+                "tasks": [string],
+                "skills_gained": [string],
+                "experiences_gained": [string],
+                "contact_person": {
+                    "name": string,
+                    "role": string,
+                    "phone": string,
+                    "email": string
+                },
+                "job_type": enum [
+                    "internship",
+                    "full-time",
+                    "part-time",
+                    "fresh graduate"
+                ],
+                "category": string
+            }
+
+    + Schema
+
+            {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                    "role": {
+                        "type": "string"
+                    },
+                    "why_us": {
+                        "type": "string"
+                    },
+                    "salary": {
+                        "type": "object",
+                        "properties": {
+                            "fee": {
+                                "type": "object",
+                                "properties": {
+                                    "minimal": {
+                                        "type": "integer"
+                                    },
+                                    "maximal": {
+                                        "type": "integer"
+                                    }
+                                }
+                            },
+                            "currency": {
+                                "type": "string"
+                            },
+                            "term": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "technical_requirements": {
+                        "type": "array",
+                        "items": { "type": "string" },
+                        "minItems": 1,
+                        "uniqueItems": true
+                    },
+                    "job_schedule": {
+                        "type": "object",
+                        "properties": {
+                            "start_at": {
+                                "type": "string"
+                            },
+                            "end_at": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "taks": {
+                        "type": "array",
+                        "items": { "type": "string" },
+                        "minItems": 1,
+                        "uniqueItems": true
+                    },
+                    "skills_gained": {
+                        "type": "array",
+                        "items": { "type": "string" },
+                        "minItems": 1,
+                        "uniqueItems": true
+                    },
+                    "experiences_gained": {
+                        "type": "array",
+                        "items": { "type": "string" },
+                        "minItems": 1,
+                        "uniqueItems": true
+                    },
+                    "contact_person": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "role": {
+                                "type": "string"
+                            },
+                            "phone": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "job_type": {
+                        "enum": [
+                            "internship",
+                            "full-time",
+                            "part-time",
+                            "fresh graduate",
+                        ]
+                    },
+                    "category": {
+                        "type": "string"
+                    }
+                }
+            }
+
++ Response 200 (application/json)
+
+        {
+          "job_id": string
+        }
+
+## Group Learning Resources
+
+Resource related to learning resources in the API.
+
+## List based on Job Category [/learning-resources/{job_category}]
+
++ Parameters
+    + job_category: designer (required, string) - category of the job in form of a string
+
+### List based on Job Category [GET]
+
+Get all learning resources based on specific job category.
+
++ Response 200 (application/json)
+
+        {
+            "category" : [
+                {
+                    "name": string,
+                    "contents": [
+                        {
+                            "name": string,
+                            "url": string
+                        }
+                    ]
+                }
+            ]
+        }
