@@ -77,6 +77,7 @@ def seedJobPost():
     def cp():
         return ContactPerson.objects.first()
 
+    category = Category.objects.first()
     JobPost.drop_collection()
     company = Company.objects.first()
     schedule1 = JobSchedule(start_at=start(), end_at=end())
@@ -91,7 +92,8 @@ def seedJobPost():
                     company=company,
                     contact_person=cp(),
                     job_type='internship',
-                    is_open=True)
+                    is_open=True,
+                    category=category)
     jobPost1.save()
     jobPost2 = JobPost(role='Marketing Division',
                     why_us='We are the best of the best',
@@ -104,7 +106,8 @@ def seedJobPost():
                     company=company,
                     contact_person=cp(),
                     job_type='full-time',
-                    is_open=True)
+                    is_open=True,
+                    category=category)
     jobPost2.save()
 
 def seedCompany():
@@ -136,6 +139,22 @@ def seedApplication():
                             student=student())
     application1.save()
 
+def seedCategory():
+    Category.drop_collection()
+    category = Category(name="Software Engineering")
+    category.save()
+
+def seedStudyReference():
+    category = Category.objects.first()
+    topics = []
+    contents = [
+        Reference(title="30 Minutes Success", ref_url="http://www.google.com"),
+        Reference(title="15 Minutes Success", ref_url="http://www.google.com")
+    ]
+    topics.append(Topic(name="Interview Tips and Trick", contents=contents))
+    study_reference = StudyReference(category=category, topics=topics)
+    study_reference.save()
+
 def seed():
     seedStudent()
     seedOfficeLocation()
@@ -145,3 +164,5 @@ def seed():
     seedApplication()
     seedUserStudent()
     seedUserCompany()
+    seedCategory()
+    seedStudyReference()
