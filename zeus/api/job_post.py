@@ -1,14 +1,12 @@
-from flask import request, jsonify
+from flask import jsonify
 from zeus import app
 from zeus.models import *
-from zeus.utils.linkedin_api import linkedin
-from datetime import *
 from zeus.utils import auth
 
 @app.route("/jobs", methods=['GET'])
 @auth.require_token
 def get_jobs():
-    jobs = JobPost.objects
+    jobs = JobPost.objects(is_open=True)
     jobs_json = []
     for job in jobs:
         jobs_json.append(job.serialize())
