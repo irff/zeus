@@ -12,3 +12,8 @@
 8. If everything is working, you can start the server using the following steps:
     - `export FLASK_APP=app.py`
     - `flask run`
+
+# Run with Docker (Compose)
+1. Change **.env** HOST config to `0.0.0.0`
+1. Change **.env** DB_HOST config to `db`
+2. `docker-compose up`

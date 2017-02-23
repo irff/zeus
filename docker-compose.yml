@@ -1,0 +1,14 @@
+web:
+  build: .
+  ports:
+    - "5000:5000"
+  links:
+    - db
+  restart: always
+
+db:
+  image: mongo:3.2
+  volumes:
+    - /tmp/data:/data
+  restart: always
+
