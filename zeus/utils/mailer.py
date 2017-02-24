@@ -17,6 +17,16 @@ def send_applied_job(**kwargs):
         message = Message(html=body, recipients=recipients, subject=subject, bcc=cc)
         mail.send(message)
 
+@celery.task
+def send_updated_status(**kwargs):
+    with app.app_context():
+        data = kwargs['data']
+        body = render_template('email_updated_status.html', **data)
+        recipients = kwargs['to']
+        subject = 'Quint - Update Status'
+        message = Message(html=body, recipients=recipients, subject=subject)
+        mail.send(message)
+
 # celery debugger
 def get_celery_worker_status():
     ERROR_KEY = "ERROR"

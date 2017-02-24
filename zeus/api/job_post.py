@@ -1,7 +1,8 @@
-from flask import jsonify
+from flask import request, jsonify
 from zeus import app
 from zeus.models import *
 from zeus.utils import auth
+
 
 @app.route("/jobs", methods=['GET'])
 @auth.require_token
@@ -17,11 +18,10 @@ def get_jobs():
 # @auth.require_token
 # @auth.privilege('company')
 # def add_job():
-#     data = request.jsonviu
-#     data['internship_schedule'] = InternshipSchedule(**data['internship_schedule'])
+#     data = request.json
 #     new_job = JobPost(**data)
 #     new_job.save()
-
+#
 #     return jsonify({
 #         'status': 'job successfully posted'
 #     }), 201

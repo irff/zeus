@@ -1,6 +1,6 @@
 from mongoengine import *
-from datetime import datetime
 from util import derefer
+
 
 class Fee(EmbeddedDocument):
     minimal = IntField()
@@ -12,18 +12,22 @@ class Fee(EmbeddedDocument):
             'maximal': self.maximal
         }
 
+
 class Salary(EmbeddedDocument):
+    is_published = BooleanField()
     fee = EmbeddedDocumentField('Fee')
-    currency = StringField(max_length=10, choices=('IDR'))
-    term = StringField(max_length=20, choices=('hari', 'jam', 'minggu', 'bulan'))
+    currency = StringField(max_length=10, choices='IDR')
+    term = StringField(max_length=20, choices=('jam', 'hari', 'minggu', 'bulan'))
 
     def serialize(self):
         return {
+            'is_published': self.is_published,
             'fee': derefer(self.fee),
             'currency': self.currency,
             'term': self.term
         }
-    
+
+
 class JobSchedule(EmbeddedDocument):
     start_at = DateTimeField()
     end_at = DateTimeField()
@@ -33,36 +37,40 @@ class JobSchedule(EmbeddedDocument):
             'start_at': self.start_at,
             'end_at': self.end_at
         }
-    
+
+
 class JobPost(Document):
     role = StringField(max_length=255, required=True)
-    why_us = StringField(required=True)
+    category = StringField(choices=('business', 'product', 'engineering', 'design', 'marketing'))
+    location = StringField(max_length=255)
+    job_schedule = EmbeddedDocumentField('JobSchedule')
     salary = EmbeddedDocumentField('Salary')
     technical_requirements = ListField(StringField(max_length=255), required=True)
-    job_schedule = EmbeddedDocumentField('JobSchedule')
     tasks = ListField(StringField(max_length=255), required=True)
-    skills_gained = ListField(StringField(max_length=255))
     experiences_gained = ListField(StringField(max_length=255))
-    contact_person = ReferenceField('ContactPerson', reverse_delete_rule=NULLIFY, required=True)
-    company = ReferenceField('Company', reverse_delete_rule=NULLIFY, required=True)
-    job_type = StringField(choices=('internship', 'full-time', 'part-time', 'fresh graduate'), required=True)
-    category = StringField(choices=('business', 'product', 'engineering', 'design', 'marketing'))
+    status = ListField(StringField(max_length=255), required=True)
     is_open = BooleanField()
+    company = ReferenceField('Company', reverse_delete_rule=NULLIFY, required=True)
 
     def serialize(self):
         return {
             'id': str(self.id),
             'role': self.role,
-            'why_us': self.why_us,
+            'category': self.category,
+            'location': self.location,
+            'job_schedule': derefer(self.job_schedule),
             'salary': derefer(self.salary),
             'technical_requirements': self.technical_requirements,
-            'job_schedule': derefer(self.job_schedule),
             'tasks': self.tasks,
-            'skills_gained': self.skills_gained,
             'experiences_gained': self.experiences_gained,
-            'contact_person': derefer(self.contact_person),
+            'status': self.status,
             'company': derefer(self.company),
-            'job_type': self.job_type,
             'created_at': self.id.generation_time.isoformat()
         }
 
+    def get_summary(self):
+        return {
+            'id': str(self.id),
+            'role': self.role,
+            'status': self.status
+        }

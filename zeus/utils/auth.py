@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 def extract_data(header):
     try:
-        header_type, value = tuple(header['Authorization'].split())
+        value = header['Authorization']
         data = jwt.decode(value, app.secret_key)
     except Exception:
         return None

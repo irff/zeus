@@ -1,7 +1,9 @@
+from datetime import *
 from flask import request, jsonify
+
 from zeus import app
 from zeus.models import *
-from datetime import *
+from zeus.services import application as _application, company as _company
 from zeus.utils import auth
 
 
@@ -18,7 +20,8 @@ def company_login():
         token = auth.create_token({
             'exp': datetime.utcnow() + timedelta(days=365),
             'user_id': str(user.id),
-            'company_id': company_id
+            'company_id': company_id,
+            'role': 'company'
         })
         return jsonify({
             'token': token,
@@ -36,10 +39,11 @@ def company_register():
         user.save()
         token = auth.create_token({
             'exp': datetime.utcnow() + timedelta(days=365),
-            'user_id': str(user.id)
+            'user_id': str(user.id),
+            'role': 'company'
         })
         return jsonify({
-            'token': token,
+            'token': token
         }), 200
     except NotUniqueError:
         return jsonify({
@@ -49,8 +53,28 @@ def company_register():
         return jsonify(), 403
 
 
+@app.route("/companies/<company_id>")
+@auth.require_token
+@auth.same_property('company_id')
+def get_company(company_id):
+    token_data = auth.extract_data(request.headers)
+    company = _company.get_company(company_id)
+
+    token = auth.create_token({
+        'exp': datetime.utcnow() + timedelta(days=365),
+        'user_id': token_data['user_id'],
+        'company_id': token_data['company_id'],
+        'role': 'company'
+    })
+    return jsonify({
+        'token': token,
+        'company': company
+    }), 200
+
+
 @app.route("/companies", methods=['POST'])
 @auth.require_token
+@auth.privilege('company')
 def add_company():
     try:
         token_data = auth.extract_data(request.headers)
@@ -63,36 +87,98 @@ def add_company():
         token = auth.create_token({
             'exp': datetime.utcnow() + timedelta(days=365),
             'user_id': str(user.id),
-            'company_id': str(user.company.id)
+            'company_id': str(user.company.id),
+            'role': 'company'
         })
         return jsonify({
-            'company_id': str(new_company.id),
-            'token': token
+            'token': token,
+            'company_id': str(new_company.id)
         }), 201
     except (InvalidQueryError, FieldDoesNotExist):
         return jsonify(), 400
 
 
+@app.route("/companies/<company_id>/applications")
+@auth.require_token
+@auth.privilege('company')
+@auth.same_property('company_id')
+def get_jobs_applications(company_id):
+    try:
+        token_data = auth.extract_data(request.headers)
+        is_new_application = request.args.get('new', type=bool)
+        applications = _company.get_jobs_applications(company_id=company_id, is_new_application=is_new_application)
+
+        token = auth.create_token({
+            'exp': datetime.utcnow() + timedelta(days=365),
+            'user_id': token_data['user_id'],
+            'company_id': token_data['company_id'],
+            'role': 'company'
+        })
+        return jsonify({
+            'token': token,
+            'applications': applications
+        }), 200
+    except (InvalidQueryError, FieldDoesNotExist):
+        return jsonify(), 400
+
+
+@app.route("/companies/<company_id>/applications/<application_id>/status", methods=['PUT'])
+@auth.require_token
+@auth.privilege('company')
+@auth.same_property('company_id')
+def update_status(company_id, application_id):
+    try:
+        status = request.json['status']
+        _application.update_status(company_id, application_id, status)
+        return jsonify(), 204
+    except InvalidQueryError:
+        return jsonify(), 400
+
+
 @app.route("/companies/<company_id>/jobs", methods=['POST'])
 @auth.require_token
+@auth.privilege('company')
 @auth.same_property('company_id')
-def add_job(company_id):
-    data = request.json
-    contact_person = ContactPerson.objects(email=data['contact_person']['email']).first()
-    if(contact_person == None):
-        contact_person = ContactPerson(**data['contact_person'])
-        contact_person.save()
-    start_at = datetime.strptime(data['job_schedule']['start_at'], '%d-%m-%Y')
-    end_at = datetime.strptime(data['job_schedule']['end_at'], '%d-%m-%Y')
-    job_schedule = JobSchedule(start_at=start_at, end_at=end_at)
-    data['contact_person'] = contact_person
-    data['job_schedule'] = job_schedule
-    job = JobPost(**data)
-    job.company = Company.objects(id=company_id).first()
-    job.save()
+def company_add_job(company_id):
+    try:
+        token_data = auth.extract_data(request.headers)
+        data = request.json
+        job = _company.add_job(company_id=company_id, data=data)
+
+        token = auth.create_token({
+            'exp': datetime.utcnow() + timedelta(days=365),
+            'user_id': token_data['user_id'],
+            'company_id': token_data['company_id'],
+            'role': 'company'
+        })
+        return jsonify({
+            'token': token,
+            'job_id': str(job.id)
+        }), 201
+    except (InvalidQueryError, FieldDoesNotExist):
+        return jsonify(), 400
+
+
+@app.route("/companies/<company_id>/statistics")
+@auth.require_token
+@auth.privilege('company')
+@auth.same_property('company_id')
+def get_statistics(company_id):
+    token_data = auth.extract_data(request.headers)
+    statistics = _company.get_statistics(company_id)
+
+    token = auth.create_token({
+        'exp': datetime.utcnow() + timedelta(days=365),
+        'user_id': token_data['user_id'],
+        'company_id': token_data['company_id'],
+        'role': 'company'
+    })
     return jsonify({
-        'job_id': str(job.id)
+        'token': token,
+        'statistics': statistics
     }), 200
+
+
 # @app.route("/companies")
 # @auth.require_token
 # def get_companies():

@@ -1,7 +1,7 @@
 from mongoengine import *
-from datetime import datetime
-from util import derefer, to_json
+from util import derefer
 from werkzeug.security import generate_password_hash, check_password_hash
+
 
 class OfficeLocation(Document):
     name = StringField(max_length=255)
@@ -14,25 +14,45 @@ class OfficeLocation(Document):
             'address': self.address,
             'location': self.location
         }
-        
+
+
+class ContactPerson(Document):
+    name = StringField(max_length=255)
+    role = StringField(max_length=255)
+    phone = StringField(max_length=255)
+    email = EmailField(unique=True)
+
+    def serialize(self):
+        return {
+            'name': self.name,
+            'role': self.role,
+            'phone': self.phone,
+            'email': self.email
+        }
+
+
 class Company(Document):
     name = StringField(max_length=255, required=True)
     logo_url = URLField(required=True)
-    company_address = StringField(required=True)
-    background_img_url = URLField()
-    website = URLField(required=True)
     category = StringField(max_length=255, required=True)
+    company_address = StringField(required=True)
+    website = URLField(required=True)
+    background_img_url = URLField()
+    description = StringField(required=True)
+    contact_person = EmbeddedDocumentField('ContactPerson')
 
     def serialize(self):
         return {
             'name': self.name,
             'logo_url': self.logo_url,
-            'background_img_url': self.background_img_url,
-            'company_address': self.company_address,
             'category': self.category,
-            'website': self.website
+            'company_address': self.company_address,
+            'website': self.website,
+            'background_img_url': self.background_img_url,
+            'description': self.description
         }
-        
+
+
 class UserCompany(Document):
     email = StringField(unique=True, max_length=255, required=True)
     password = StringField(max_length=255, required=True)
@@ -42,7 +62,7 @@ class UserCompany(Document):
         return check_password_hash(self.password, password)
 
     def set_password(self, password):
-        if(len(password) > 0):
+        if len(password) > 0:
             self.password = generate_password_hash(password)
 
     def serialize(self):
@@ -51,5 +71,3 @@ class UserCompany(Document):
             'company': derefer(self.company),
             'created_at': self.id.generation_time.isoformat()
         }
-
-
