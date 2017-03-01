@@ -191,12 +191,15 @@ def get_student_jobs_detail(student_id):
     accepted_num = Application.objects(student=student_id, status='Diterima').count()
     rejected_num = Application.objects(student=student_id, status='Ditolak').count()
 
+    jobs = []
+    for application in applications:
+        jobs.append(application.serialize_for_student())
     return jsonify({
         'registered_num': registered_num,
         'processed_num': processed_num,
         'accepted_num': accepted_num,
         'rejected_num': rejected_num,
-        'jobs': to_json(applications)
+        'jobs': jobs
     })
 # @app.route("/students/<student_id>", methods=['DELETE'])
 # @auth.require_token
