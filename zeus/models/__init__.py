@@ -1,5 +1,3 @@
-from mongoengine import *
-
 from Student import *
 from UserStudent import *
 from ContactPerson import *
