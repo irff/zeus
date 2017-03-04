@@ -53,25 +53,6 @@ def company_register():
         return jsonify(), 403
 
 
-@app.route("/companies/<company_id>")
-@auth.require_token
-@auth.same_property('company_id')
-def get_company(company_id):
-    token_data = auth.extract_data(request.headers)
-    company = _company.get_company(company_id)
-
-    token = auth.create_token({
-        'exp': datetime.utcnow() + timedelta(days=365),
-        'user_id': token_data['user_id'],
-        'company_id': token_data['company_id'],
-        'role': 'company'
-    })
-    return jsonify({
-        'token': token,
-        'company': company
-    }), 200
-
-
 @app.route("/companies", methods=['POST'])
 @auth.require_token
 @auth.privilege('company')
@@ -95,6 +76,48 @@ def add_company():
             'company_id': str(new_company.id)
         }), 201
     except (InvalidQueryError, FieldDoesNotExist):
+        return jsonify(), 400
+
+
+@app.route("/companies/<company_id>")
+@auth.require_token
+@auth.same_property('company_id')
+def get_company(company_id):
+    token_data = auth.extract_data(request.headers)
+    company = _company.get_company(company_id)
+
+    token = auth.create_token({
+        'exp': datetime.utcnow() + timedelta(days=365),
+        'user_id': token_data['user_id'],
+        'company_id': token_data['company_id'],
+        'role': 'company'
+    })
+    return jsonify({
+        'token': token,
+        'company': company
+    }), 200
+
+
+@app.route("/companies/<company_id>", methods=['PUT'])
+@auth.require_token
+@auth.privilege('company')
+@auth.same_property('company_id')
+def modify_company(company_id):
+    try:
+        token_data = auth.extract_data(request.headers)
+        data = request.json
+        _company.modify_company(company_id, data)
+
+        token = auth.create_token({
+            'exp': datetime.utcnow() + timedelta(days=365),
+            'user_id': token_data['user_id'],
+            'company_id': token_data['company_id'],
+            'role': 'company'
+        })
+        return jsonify({
+            'token': token
+        }), 200
+    except InvalidQueryError:
         return jsonify(), 400
 
 
@@ -122,15 +145,48 @@ def get_jobs_applications(company_id):
         return jsonify(), 400
 
 
+@app.route("/companies/<company_id>/applications/<application_id>/resume-read", methods=['POST'])
+@auth.require_token
+@auth.privilege('company')
+@auth.same_property('company_id')
+def send_resume_read(company_id, application_id):
+    try:
+        token_data = auth.extract_data(request.headers)
+        _application.send_resume_read(company_id, application_id)
+
+        token = auth.create_token({
+            'exp': datetime.utcnow() + timedelta(days=365),
+            'user_id': token_data['user_id'],
+            'company_id': token_data['company_id'],
+            'role': 'company'
+        })
+        return jsonify({
+            'token': token
+        }), 200
+    except InvalidQueryError:
+        return jsonify(), 400
+
+
 @app.route("/companies/<company_id>/applications/<application_id>/status", methods=['PUT'])
 @auth.require_token
 @auth.privilege('company')
 @auth.same_property('company_id')
-def update_status(company_id, application_id):
+def modify_status(company_id, application_id):
     try:
-        status = request.json['status']
-        _application.update_status(company_id, application_id, status)
-        return jsonify(), 204
+        token_data = auth.extract_data(request.headers)
+        current_status = request.json['status']
+        email_rejected_content = request.json['email_rejected_content']
+        _application.modify_status(company_id, application_id, current_status, email_rejected_content)
+
+        token = auth.create_token({
+            'exp': datetime.utcnow() + timedelta(days=365),
+            'user_id': token_data['user_id'],
+            'company_id': token_data['company_id'],
+            'role': 'company'
+        })
+        return jsonify({
+            'token': token
+        }), 200
     except InvalidQueryError:
         return jsonify(), 400
 

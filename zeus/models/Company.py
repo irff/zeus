@@ -3,52 +3,23 @@ from util import derefer
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-class OfficeLocation(Document):
-    name = StringField(max_length=255)
-    address = StringField(max_length=255)
-    location = GeoPointField()
-
-    def serialize(self):
-        return {
-            'name': self.name,
-            'address': self.address,
-            'location': self.location
-        }
-
-
-class ContactPerson(Document):
-    name = StringField(max_length=255)
-    role = StringField(max_length=255)
-    phone = StringField(max_length=255)
-    email = EmailField(unique=True)
-
-    def serialize(self):
-        return {
-            'name': self.name,
-            'role': self.role,
-            'phone': self.phone,
-            'email': self.email
-        }
-
-
 class Company(Document):
     name = StringField(max_length=255, required=True)
-    logo_url = URLField(required=True)
     category = StringField(max_length=255, required=True)
-    company_address = StringField(required=True)
+    location = StringField(max_length=255)
+    logo_url = URLField(required=True)
+    header_img_url = URLField()
     website = URLField(required=True)
-    background_img_url = URLField()
     description = StringField(required=True)
-    contact_person = EmbeddedDocumentField('ContactPerson')
 
     def serialize(self):
         return {
             'name': self.name,
-            'logo_url': self.logo_url,
             'category': self.category,
-            'company_address': self.company_address,
+            'location': self.location,
+            'logo_url': self.logo_url,
+            'header_img_url': self.header_img_url,
             'website': self.website,
-            'background_img_url': self.background_img_url,
             'description': self.description
         }
 

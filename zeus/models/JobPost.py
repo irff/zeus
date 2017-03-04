@@ -41,8 +41,8 @@ class JobSchedule(EmbeddedDocument):
 
 class JobPost(Document):
     role = StringField(max_length=255, required=True)
-    category = StringField(choices=('business', 'product', 'engineering', 'design', 'marketing'))
-    location = StringField(max_length=255)
+    category = StringField(choices=('business', 'product', 'engineering', 'design', 'marketing'), required=True)
+    location = StringField(max_length=255, required=True)
     job_schedule = EmbeddedDocumentField('JobSchedule')
     salary = EmbeddedDocumentField('Salary')
     technical_requirements = ListField(StringField(max_length=255), required=True)
@@ -51,6 +51,7 @@ class JobPost(Document):
     status = ListField(StringField(max_length=255), required=True)
     is_open = BooleanField()
     company = ReferenceField('Company', reverse_delete_rule=NULLIFY, required=True)
+    job_type = StringField(choices=('internship', 'full-time', 'part-time', 'fresh graduate'), required=True)
 
     def serialize(self):
         return {

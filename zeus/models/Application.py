@@ -3,9 +3,24 @@ from datetime import datetime
 from util import derefer, to_json
 
 
+status_choices = (
+    'WAIT_FOR_REVIEW',
+    'RESUME_REVIEWED',
+    'WAIT_FOR_PHONE',
+    'PHONE_REVIEWED',
+    'WAIT_FOR_ONLINE_TEST',
+    'ONLINE_TEST_REVIEWED',
+    'WAIT_FOR_SUBMISSION',
+    'SUBMISSION_REVIEWED',
+    'WAIT_FOR_ONSITE_TEST',
+    'ONSITE_TEST_REVIEWED',
+    'REJECTED',
+    'ACCEPTED'
+)
+
 class StatusHistory(EmbeddedDocument):
     changed_at = DateTimeField()
-    status = StringField(max_length=255, choices=('Diterima', 'Ditolak', 'Resume sedang direview', 'Menunggu wawancara/tes', 'Hasil sedang direview'))
+    status = StringField(max_length=255, choices=status_choices)
 
     def serialize(self):
         return {
@@ -19,7 +34,7 @@ class Application(Document):
     student = ReferenceField('Student', reverse_delete_rule=NULLIFY)
     company = ReferenceField('Company', reverse_delete_rule=NULLIFY)
     applied_at = DateTimeField(default=datetime.now)
-    status = StringField(max_length=255, choices=('Diterima', 'Ditolak', 'Resume sedang direview', 'Menunggu wawancara/tes', 'Hasil sedang direview'), default='Resume sedang direview')
+    status = StringField(max_length=255, choices=status_choices, default='Resume sedang direview')
     status_histories = ListField(EmbeddedDocumentField('StatusHistory'))
     is_new = BooleanField()
 

@@ -1,6 +1,7 @@
 from datetime import *
 
 from zeus.models import Application, Company, JobPost, JobSchedule
+from zeus.utils import mapper
 
 
 class CompanyService:
@@ -10,8 +11,9 @@ class CompanyService:
         end_at = datetime.strptime(data['job_schedule']['end_at'], '%d-%m-%Y')
         job_schedule = JobSchedule(start_at=start_at, end_at=end_at)
         data['job_schedule'] = job_schedule
-        data['status'] = data['status'] + ['Ditolak', 'Diterima']
+        data['status'] = mapper.map_generate_status(data['status'])
         data['is_open'] = True
+        data['job_type'] = 'internship'
         job = JobPost(**data)
         job.company = Company.objects(id=company_id).first()
         job.save()
@@ -61,3 +63,6 @@ class CompanyService:
             'rejected_num': rejected_num,
             'in_progress_num': in_progress_num
         }
+
+    def modify_company(self, company_id, data):
+        Company.objects(id=company_id).modify(**data)

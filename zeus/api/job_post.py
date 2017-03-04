@@ -14,18 +14,6 @@ def get_jobs():
     jobs_json = sorted(jobs_json, key=lambda job: job['created_at'], reverse=True)
     return jsonify(jobs_json), 200
 
-# @app.route("/jobs", methods=['POST'])
-# @auth.require_token
-# @auth.privilege('company')
-# def add_job():
-#     data = request.json
-#     new_job = JobPost(**data)
-#     new_job.save()
-#
-#     return jsonify({
-#         'status': 'job successfully posted'
-#     }), 201
-
 # @app.route("/jobs/<job_id>")
 # @auth.require_token
 # def get_job(job_id):
