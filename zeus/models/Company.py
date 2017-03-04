@@ -1,22 +1,24 @@
 from mongoengine import *
-from datetime import datetime
-from util import derefer, to_json
+from util import derefer
 from werkzeug.security import generate_password_hash, check_password_hash
-        
+
+
 class Company(Document):
     name = StringField(max_length=255, required=True)
-    logo_url = URLField(required=True)
-    company_address = StringField(required=True)
-    background_img_url = URLField()
-    website = URLField(required=True)
     category = StringField(max_length=255, required=True)
+    location = StringField(max_length=255)
+    logo_url = URLField(required=True)
+    header_img_url = URLField()
+    website = URLField(required=True)
+    description = StringField(required=True)
 
     def serialize(self):
         return {
             'name': self.name,
-            'logo_url': self.logo_url,
-            'background_img_url': self.background_img_url,
-            'company_address': self.company_address,
             'category': self.category,
-            'website': self.website
+            'location': self.location,
+            'logo_url': self.logo_url,
+            'header_img_url': self.header_img_url,
+            'website': self.website,
+            'description': self.description
         }

@@ -1,50 +1,11 @@
-import unittest
 import json
+import unittest
+
 from utils.seeds import *
 from zeus.models import *
-from zeus import app
-from zeus.utils import auth
+from zeus.tests.Helper import Helper
 
 seed()
-class Helper():
-    def __init__(self):
-        self.app = app.test_client()
-
-    def setType(self, user_type):
-        self.user_type = user_type;
-
-    def login(self, email, password):
-        return self.app.post('/'+self.user_type+'/login', data=json.dumps(dict(
-            email=email,
-            password=password
-        )), content_type='application/json')
-
-    def logout(self):
-        return self.app.get('/'+self.user_type+'/logout')
-
-    def register(self, email, password):
-        return self.app.post('/'+self.user_type+'/register', data=json.dumps(dict(
-            email=email,
-            password=password
-        )), content_type='application/json')
-
-
-    def get_token_data(self, data):
-        token = json.loads(data)['token']
-        return auth.decode_token(token)
-
-    def post(self, url, data, headers=None):
-        return self.app.post(url, data=json.dumps(data), content_type='application/json', headers=headers)
-
-    def get(self, url, headers=None):
-        return self.app.get(url, headers=headers)
-
-    def delete(self, url, headers=None):
-        return self.app.delete(url, headers=headers)
-
-    def put(self, url, data, headers=None):
-        return self.app.put(url, data=json.dumps(data), content_type='application/json', headers=headers)
-
 
 class StudentLoginTest(unittest.TestCase):
     def setUp(self):
@@ -93,7 +54,7 @@ class StudentLoginTest(unittest.TestCase):
         })
         self.assertEqual(400, rv.status_code)
         self.assertIn('password', rv.data)
-    
+
 class StudentRegisterTest(unittest.TestCase):
     def setUp(self):
         self.helper = Helper()
@@ -110,7 +71,7 @@ class StudentRegisterTest(unittest.TestCase):
         self.assertIn('token', rv.data)
         token = json.loads(rv.data)['token']
         self.assertEqual(200, rv.status_code)
-        
+
     def test_register_with_duplicate_email(self):
         rv = self.register({
             'email': 'genturwt@gmail.com',
@@ -140,7 +101,7 @@ class StudentRegisterTest(unittest.TestCase):
 class StudentTest(unittest.TestCase):
     def setUp(self):
         self.helper = Helper()
-        self.helper.setType('students')
+        self.helper.set_type('students')
         data = json.loads(self.helper.login('genturwt@gmail.com', 'quint-dev').data)
         self.id = data['student_id']
         self.token = data['token']
@@ -195,7 +156,7 @@ class StudentTest(unittest.TestCase):
 class ApplicationTest(unittest.TestCase):
     def setUp(self):
         self.helper = Helper()
-        self.helper.setType('students')
+        self.helper.set_type('students')
         data = json.loads(self.helper.login('genturwt@gmail.com', 'quint-dev').data)
         self.id = data['student_id']
         self.token = data['token']
@@ -214,78 +175,6 @@ class ApplicationTest(unittest.TestCase):
             'Authorization': 'Bearer ' + self.token
         })
         self.assertIn('jobs', rv.data)
-# class CompanyAuthTest(unittest.TestCase):
-
-#     def setUp(self):
-#         self.app = app.test_client()
-#         self.helper = Helper()
-#         self.helper.setType('companies')
-
-#     def test_login(self):
-#         def valid_credential():
-#             rv = self.helper.login('genturwt@quint.id', 'quint-dev')
-#             self.assertIn('success', rv.data)
-
-#         def wrong_email():
-#             rv = self.helper.login('ags@quint.id', 'quint-dev')
-#             self.assertIn('invalid', rv.data)
-
-#         def wrong_password():
-#             rv = self.helper.login('genturwt@quint.id', 'quint')
-#             self.assertIn('invalid', rv.data)
-
-#         def invalid_email():
-#             rv = self.helper.login('kenny', 'quint')
-#             self.assertIn('Not a valid email', rv.data)
-
-#         def empty_required_field():
-#             rv = self.helper.login('quint', '')
-#             self.assertIn('This field is required.', rv.data)
-#             rv = self.helper.login('', 'quint')
-#             self.assertIn('This field is required.', rv.data)
-
-#         valid_credential()
-#         wrong_email()
-#         wrong_password()
-#         invalid_email()
-#         empty_required_field()
-
-#     def test_logout(self):
-#         def with_login():
-#             self.helper.login('genturwt@quint.id', 'quint-dev')
-#             rv = self.helper.logout()
-#             self.assertIn('success', rv.data)
-        
-#         def without_login():
-#             rv = self.helper.logout()
-#             self.assertIn('success', rv.data)
-
-#         with_login()
-#         without_login()
-
-#     def test_register(self):
-#         def valid_credential():
-#             rv = self.helper.register('tri@quint.dev', 'quint')
-#             self.assertIn('created', rv.data)
-        
-#         def duplicate_email():
-#             rv = self.helper.register('genturwt@quint.id', 'quint')
-#             self.assertIn('exist', rv.data)
-
-#         def invalid_email():
-#             rv = self.helper.register('kenny', 'quint')
-#             self.assertIn('Not a valid email', rv.data)
-
-#         def empty_required_field():
-#             rv = self.helper.register('quint', '')
-#             self.assertIn('This field is required.', rv.data)
-#             rv = self.helper.register('', 'quint')
-#             self.assertIn('This field is required.', rv.data)
-
-#         valid_credential()
-#         duplicate_email()
-#         invalid_email()
-#         empty_required_field()
 
 # class JobPostTest(unittest.TestCase):
 #     def setUp(self):

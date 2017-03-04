@@ -187,9 +187,9 @@ def get_student(student_id):
 def get_student_jobs_detail(student_id):
     applications = Application.objects(student=student_id).all()
     registered_num = Application.objects(student=student_id).count()
-    processed_num = Application.objects(student=student_id, status__nin=['Diterima', 'Ditolak']).count()
-    accepted_num = Application.objects(student=student_id, status='Diterima').count()
-    rejected_num = Application.objects(student=student_id, status='Ditolak').count()
+    accepted_num = Application.objects(student=student_id, status='ACCEPTED').count()
+    rejected_num = Application.objects(student=student_id, status='REJECTED').count()
+    processed_num = registered_num - accepted_num - rejected_num
 
     jobs = []
     for application in applications:

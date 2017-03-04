@@ -17,6 +17,40 @@ def send_applied_job(**kwargs):
         message = Message(html=body, recipients=recipients, subject=subject, bcc=cc)
         mail.send(message)
 
+@celery.task
+def send_resume_read(**kwargs):
+    with app.app_context():
+        data = kwargs['data']
+        student = data['student']
+
+        template = 'for_student/email_resume_read.html'
+
+        body = render_template(template, **data)
+        recipients = kwargs['to']
+        subject = 'Notifikasi Quint untuk {0}'.format(student.first_name)
+        cc = ['firza@quint.id']
+        message = Message(html=body, recipients=recipients, subject=subject, bcc=cc)
+        mail.send(message)
+
+@celery.task
+def send_updated_status(**kwargs):
+    with app.app_context():
+        data = kwargs['data']
+        student = data['student']
+
+        template = 'for_student/email_updated_status.html'
+        if data['current_status'] == 'ACCEPTED':
+            template = 'for_student/email_get_offer.html'
+        elif data['current_status'] == 'REJECTED':
+            template = 'for_student/email_rejected.html'
+
+        body = render_template(template, **data)
+        recipients = kwargs['to']
+        subject = 'Notifikasi Quint untuk {0}'.format(student.first_name)
+        cc = ['firza@quint.id']
+        message = Message(html=body, recipients=recipients, subject=subject, bcc=cc)
+        mail.send(message)
+
 # celery debugger
 def get_celery_worker_status():
     ERROR_KEY = "ERROR"

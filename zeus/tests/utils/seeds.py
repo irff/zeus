@@ -37,21 +37,21 @@ def seedUserStudent():
                 student=Student.objects.first())
     user3.save()
 
-def seedUserCompany():
-    UserCompany.drop_collection()
-    user1 = UserCompany(email='genturwt@gmail.com',
-                password=generate_password_hash('quint-dev'),
-                company=Company.objects.first())
-    user1.save()
-
-    user2 = UserCompany(email='kenny@quint.id',
-                password=generate_password_hash('quint-front'),
-                company=Company.objects.first())
-    user2.save()
-
-    user3 = UserCompany(email='irfan@quint.id',
-                password=generate_password_hash('quint-master'),
-                company=Company.objects.first())
+# def seedUserCompany():
+#     UserCompany.drop_collection()
+#     user1 = UserCompany(email='genturwt@gmail.com',
+#                 password=generate_password_hash('quint-dev'),
+#                 company=Company.objects.first())
+#     user1.save()
+#
+#     user2 = UserCompany(email='kenny@quint.id',
+#                 password=generate_password_hash('quint-front'),
+#                 company=Company.objects.first())
+#     user2.save()
+#
+#     user3 = UserCompany(email='irfan@quint.id',
+#                 password=generate_password_hash('quint-master'),
+#                 company=Company.objects.first())
     user3.save()
 
 def seedOfficeLocation():
@@ -69,100 +69,77 @@ def seedContactPerson():
                                 email='firza@quint.dev')
     contactPerson1.save()
 
-def seedJobPost():
-    def start():
-        return datetime.datetime(2016,9,1,0,0,0)
-    def end():
-        return datetime.datetime(2016,9,30,23,55,0)
-    def cp():
-        return ContactPerson.objects.first()
+# def seedJobPost():
+#     def start():
+#         return datetime.datetime(2016,9,1,0,0,0)
+#     def end():
+#         return datetime.datetime(2016,9,30,23,55,0)
+#     def cp():
+#         return ContactPerson.objects.first()
+#
+#     JobPost.drop_collection()
+#     company = Company.objects.first()
+#     schedule1 = JobSchedule(start_at=start(), end_at=end())
+#     jobPost1 = JobPost(role='Software Engineer Intern',
+#                     why_us='We are the best of the best',
+#                     salary=Salary(fee=Fee(minimal=100000, maximal=200000), currency="IDR", term="bulan"),
+#                     technical_requirements=['PHP', 'CSS', 'Python'],
+#                     job_schedule= schedule1,
+#                     tasks=['Create back-end systems', 'Create front-end systems'],
+#                     skills_gained=['Leadership', 'Strong team-work'],
+#                     experiences_gained=['Get to know CEO of Quint', 'Meet investor'],
+#                     company=company,
+#                     contact_person=cp(),
+#                     job_type='internship')
+#     jobPost1.save()
+#     jobPost2 = JobPost(role='Marketing Division',
+#                     why_us='We are the best of the best',
+#                     salary=Salary(fee=Fee(minimal=100000, maximal=200000), currency="IDR", term="bulan"),
+#                     technical_requirements=['PHP', 'CSS', 'Python'],
+#                     job_schedule= schedule1,
+#                     tasks=['Create back-end systems', 'Create front-end systems'],
+#                     skills_gained=['Leadership', 'Strong team-work'],
+#                     experiences_gained=['Get to know CEO of Quint', 'Meet investor'],
+#                     company=company,
+#                     contact_person=cp(),
+#                     job_type='full-time')
+#     jobPost2.save()
 
-    category = Category.objects.first()
-    JobPost.drop_collection()
-    company = Company.objects.first()
-    schedule1 = JobSchedule(start_at=start(), end_at=end())
-    jobPost1 = JobPost(role='Software Engineer Intern',
-                    why_us='We are the best of the best',
-                    salary=Salary(fee=Fee(minimal=100000, maximal=200000), currency="IDR", term="bulan"),
-                    technical_requirements=['PHP', 'CSS', 'Python'],
-                    job_schedule= schedule1,
-                    tasks=['Create back-end systems', 'Create front-end systems'],
-                    skills_gained=['Leadership', 'Strong team-work'],
-                    experiences_gained=['Get to know CEO of Quint', 'Meet investor'],
-                    company=company,
-                    contact_person=cp(),
-                    job_type='internship',
-                    is_open=True,
-                    category=category)
-    jobPost1.save()
-    jobPost2 = JobPost(role='Marketing Division',
-                    why_us='We are the best of the best',
-                    salary=Salary(fee=Fee(minimal=100000, maximal=200000), currency="IDR", term="bulan"),
-                    technical_requirements=['PHP', 'CSS', 'Python'],
-                    job_schedule= schedule1,
-                    tasks=['Create back-end systems', 'Create front-end systems'],
-                    skills_gained=['Leadership', 'Strong team-work'],
-                    experiences_gained=['Get to know CEO of Quint', 'Meet investor'],
-                    company=company,
-                    contact_person=cp(),
-                    job_type='full-time',
-                    is_open=True,
-                    category=category)
-    jobPost2.save()
+# def seedCompany():
+#     Company.drop_collection()
+#     def loc():
+#         return OfficeLocation.objects.all()
+#     def job():
+#         return JobPost.objects.all()
+#     def cp():
+#         return ContactPerson.objects.first()
+#
+#     company1 = Company(name='Quint',
+#                     logo_url='http://quint.dev/logo.jpg',
+#                     background_img_url='http://quint.dev/background.jpg',
+#                     company_address='Jalan Haji Kodja No. 11, Kukel, Beji, Depok',
+#                     website='http://quint.dev',
+#                     category='Internship Third-Party'
+#                     )
+#     company1.save()
 
-def seedCompany():
-    Company.drop_collection()
-    def loc():
-        return OfficeLocation.objects.all()
-    def job():
-        return JobPost.objects.all()
-    def cp():
-        return ContactPerson.objects.first()
-
-    company1 = Company(name='Quint',
-                    logo_url='http://quint.dev/logo.jpg',
-                    background_img_url='http://quint.dev/background.jpg',
-                    company_address='Jalan Haji Kodja No. 11, Kukel, Beji, Depok',
-                    website='http://quint.dev',
-                    category='Internship Third-Party'
-                    )
-    company1.save()
-
-def seedApplication():
-    def job():
-        return JobPost.objects.first()
-    def student():
-        return Student.objects.first()
-
-    Application.drop_collection()
-    application1 = Application(job_post=job(),
-                            student=student())
-    application1.save()
-
-def seedCategory():
-    Category.drop_collection()
-    category = Category(name="Software Engineering")
-    category.save()
-
-def seedStudyReference():
-    category = Category.objects.first()
-    topics = []
-    contents = [
-        Reference(title="30 Minutes Success", ref_url="http://www.google.com"),
-        Reference(title="15 Minutes Success", ref_url="http://www.google.com")
-    ]
-    topics.append(Topic(name="Interview Tips and Trick", contents=contents))
-    study_reference = StudyReference(category=category, topics=topics)
-    study_reference.save()
+# def seedApplication():
+#     def job():
+#         return JobPost.objects.first()
+#     def student():
+#         return Student.objects.first()
+#
+#     Application.drop_collection()
+#     application1 = Application(job_post=job(),
+#                             student=student())
+#     application1.save()
 
 def seed():
     seedStudent()
     seedOfficeLocation()
     seedContactPerson()
-    seedCompany()
-    seedJobPost()
-    seedApplication()
+    # seedCompany()
+    # seedJobPost()
+    # seedApplication()
     seedUserStudent()
-    seedUserCompany()
-    seedCategory()
-    seedStudyReference()
+    # seedUserCompany()
