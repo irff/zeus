@@ -1,7 +1,8 @@
 from mongoengine import *
 from datetime import datetime
 from util import derefer, to_json
-
+from StudyReference import StudyReference
+from zeus.utils import mapper
 
 status_choices = (
     'WAIT_FOR_REVIEW',
@@ -58,14 +59,13 @@ class Application(Document):
     def serialize_for_student(self):
         study_references = StudyReference.objects(category=self.job_post.category).first()
         return {
-            'status': self.status,
+            'status': mapper.map_status(self.status, 'student'),
             'salary': self.job_post.salary.serialize(),
             'job_detail': {
                 'role': self.job_post.role,
                 'company': {
                     'logo_url': self.job_post.company.logo_url,
-                    'name': self.job_post.company.name,
-                    'company_address': self.job_post.company.company_address
+                    'name': self.job_post.company.name
                 },
                 'study_references': study_references.serialize_topics()
             },

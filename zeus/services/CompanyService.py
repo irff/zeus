@@ -53,8 +53,8 @@ class CompanyService:
         rejected_num = 0
         for job in jobs:
             applicant_num += Application.objects(job_post=job.id).count()
-            accepted_num += Application.objects(job_post=job.id, status='Diterima').count()
-            rejected_num += Application.objects(job_post=job.id, status='Ditolak').count()
+            accepted_num += Application.objects(job_post=job.id, status='ACCEPTED').count()
+            rejected_num += Application.objects(job_post=job.id, status='REJECTED').count()
         in_progress_num = applicant_num - accepted_num - rejected_num
         return {
             'job_num': job_num,
