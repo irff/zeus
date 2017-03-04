@@ -19,7 +19,7 @@ status_choices = (
 )
 
 class StatusHistory(EmbeddedDocument):
-    changed_at = DateTimeField()
+    changed_at = DateTimeField(default=datetime.now)
     status = StringField(max_length=255, choices=status_choices)
 
     def serialize(self):
@@ -34,7 +34,7 @@ class Application(Document):
     student = ReferenceField('Student', reverse_delete_rule=NULLIFY)
     company = ReferenceField('Company', reverse_delete_rule=NULLIFY)
     applied_at = DateTimeField(default=datetime.now)
-    status = StringField(max_length=255, choices=status_choices, default='Resume sedang direview')
+    status = StringField(max_length=255, choices=status_choices, default='WAIT_FOR_REVIEW')
     status_histories = ListField(EmbeddedDocumentField('StatusHistory'))
     is_new = BooleanField()
 

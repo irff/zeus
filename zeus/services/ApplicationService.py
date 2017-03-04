@@ -1,4 +1,4 @@
-from zeus.models import Application
+from zeus.models import Application, StatusHistory
 from zeus.utils import mailer, mapper
 
 class ApplicationService:
@@ -42,8 +42,14 @@ class ApplicationService:
 
     def send_resume_read(self,company_id, application_id):
         application = Application.objects(id=application_id, company=company_id).first()
-        if application is None:
+        if application is None or not application.is_new:
             return
+
+        prev_status_history = StatusHistory({'status': application.status})
+        application.status_histories.append(prev_status_history)
+
+        application.is_new = False
+        application.status = 'RESUME_REVIEWED'
 
         email = application.student.email
         student = application.student
