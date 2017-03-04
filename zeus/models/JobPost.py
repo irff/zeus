@@ -46,8 +46,8 @@ class JobPost(Document):
     contact_person = ReferenceField('ContactPerson', reverse_delete_rule=NULLIFY, required=True)
     company = ReferenceField('Company', reverse_delete_rule=NULLIFY, required=True)
     job_type = StringField(choices=('internship', 'full-time', 'part-time', 'fresh graduate'), required=True)
-    category = StringField(choices=('business', 'product', 'engineering', 'design', 'marketing'))
-    is_open = BooleanField()
+    category = ReferenceField('Category', reverse_delete_rule=NULLIFY)
+    is_open = BooleanField(default=True)
 
     def serialize(self):
         return {
