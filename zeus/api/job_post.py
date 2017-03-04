@@ -8,9 +8,7 @@ from zeus.utils import auth
 @auth.require_token
 def get_jobs():
     jobs = JobPost.objects(is_open=True)
-    jobs_json = []
-    for job in jobs:
-        jobs_json.append(job.serialize())
+    jobs_json = to_json(jobs)
     jobs_json = sorted(jobs_json, key=lambda job: job['created_at'], reverse=True)
     return jsonify(jobs_json), 200
 

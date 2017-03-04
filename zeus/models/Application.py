@@ -54,3 +54,20 @@ class Application(Document):
             'applied_at': self.applied_at.isoformat(),
             'status': self.status
         }
+
+    def serialize_for_student(self):
+        study_references = StudyReference.objects(category=self.job_post.category).first()
+        return {
+            'status': self.status,
+            'salary': self.job_post.salary.serialize(),
+            'job_detail': {
+                'role': self.job_post.role,
+                'company': {
+                    'logo_url': self.job_post.company.logo_url,
+                    'name': self.job_post.company.name,
+                    'company_address': self.job_post.company.company_address
+                },
+                'study_references': study_references.serialize_topics()
+            },
+            'updated_at': self.updated_at.isoformat()
+        }

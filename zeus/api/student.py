@@ -181,6 +181,26 @@ def get_student(student_id):
     student = Student.objects(id=student_id).first()
     return jsonify(student.serialize()), 200
 
+@app.route("/students/<student_id>/jobs/detail")
+@auth.require_token
+@auth.same_property('student_id')
+def get_student_jobs_detail(student_id):
+    applications = Application.objects(student=student_id).all()
+    registered_num = Application.objects(student=student_id).count()
+    processed_num = Application.objects(student=student_id, status__nin=['Diterima', 'Ditolak']).count()
+    accepted_num = Application.objects(student=student_id, status='Diterima').count()
+    rejected_num = Application.objects(student=student_id, status='Ditolak').count()
+
+    jobs = []
+    for application in applications:
+        jobs.append(application.serialize_for_student())
+    return jsonify({
+        'registered_num': registered_num,
+        'processed_num': processed_num,
+        'accepted_num': accepted_num,
+        'rejected_num': rejected_num,
+        'jobs': jobs
+    })
 # @app.route("/students/<student_id>", methods=['DELETE'])
 # @auth.require_token
 # @auth.same_property('student_id')
