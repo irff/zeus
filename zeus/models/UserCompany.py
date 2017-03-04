@@ -1,5 +1,6 @@
 from mongoengine import *
 from werkzeug.security import generate_password_hash, check_password_hash
+from util import derefer
 
 class UserCompany(Document):
     email = StringField(unique=True, max_length=255, required=True)
