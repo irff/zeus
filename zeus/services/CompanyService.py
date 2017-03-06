@@ -40,6 +40,15 @@ class CompanyService:
             applicants = self.get_applicants(job.id, is_new_application)
             applicant_nums = len(applicants)
             job_json = job.get_summary()
+
+            list_status = []
+            for status in job_json.status:
+                list_status.append({
+                    'text': mapper.map_status(status, 'company'),
+                    'value':status
+                })
+
+            job_json['status'] = list_status
             job_json['applicants'] = applicants
             job_json['applicant_num'] = applicant_nums
             jobs_json.append(job_json)
