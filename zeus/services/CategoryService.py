@@ -5,4 +5,8 @@ class CategoryService:
 
     def get_categories(self):
         categories = Category.objects().only('name').all()
-        return categories
+        list_category = []
+
+        for category in categories:
+            list_category.append(category.name)
+        return list_category
