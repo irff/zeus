@@ -2,6 +2,7 @@ from mongoengine import *
 from datetime import datetime
 from util import derefer, to_json
 from StudyReference import StudyReference
+from UserStudent import UserStudent
 from zeus.utils import mapper
 
 status_choices = (
@@ -50,8 +51,10 @@ class Application(Document):
         }
 
     def get_applicant(self):
+        email = UserStudent.objects(student=self.student.id).first().email
         return {
             'student': derefer(self.student),
+            'email': email,
             'applied_at': self.applied_at.isoformat(),
             'status': self.status
         }
