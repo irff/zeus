@@ -42,7 +42,7 @@ class CompanyService:
             job_json = job.get_summary()
 
             list_status = []
-            for status in job_json.status:
+            for status in job_json['status']:
                 list_status.append({
                     'text': mapper.map_status(status, 'company'),
                     'value':status
