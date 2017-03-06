@@ -1,4 +1,4 @@
-from zeus.models import Application, StatusHistory
+from zeus.models import Application, StatusHistory, UserStudent
 from zeus.utils import mailer, mapper
 
 class ApplicationService:
@@ -17,7 +17,7 @@ class ApplicationService:
         application.is_new = False
         application.save()
 
-        email = application.student.email
+        email = UserStudent.objects(student=application.student.id).first().email
         student = application.student
         company = application.company
         job_post = application.job_post
@@ -51,7 +51,7 @@ class ApplicationService:
         application.is_new = False
         application.status = 'RESUME_REVIEWED'
 
-        email = application.student.email
+        email = UserStudent.objects(student=application.student.id).first().email
         student = application.student
         company = application.company
         job_post = application.job_post
