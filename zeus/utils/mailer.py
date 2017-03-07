@@ -39,14 +39,15 @@ def send_updated_status(**kwargs):
         student = data['student']
 
         template = 'for_student/email_updated_status.html'
+        subject = 'Notifikasi Quint untuk {0}'.format(student.first_name)
         if data['current_status'] == 'ACCEPTED':
             template = 'for_student/email_get_offer.html'
         elif data['current_status'] == 'REJECTED':
             template = 'for_student/email_rejected.html'
+            subject = data['email_rejected_subject']
 
         body = render_template(template, **data)
         recipients = kwargs['to']
-        subject = 'Notifikasi Quint untuk {0}'.format(student.first_name)
         cc = ['firza@quint.id']
         message = Message(html=body, recipients=recipients, subject=subject, bcc=cc)
         mail.send(message)

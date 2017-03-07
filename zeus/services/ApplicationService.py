@@ -3,7 +3,7 @@ from zeus.utils import mailer, mapper
 
 class ApplicationService:
 
-    def modify_status(self, company_id, application_id, current_status, email_rejected_content):
+    def modify_status(self, company_id, application_id, current_status, email_rejected_subject, email_rejected_content):
         application = Application.objects(id=application_id, company=company_id).first()
         if application is None:
             return
@@ -37,6 +37,7 @@ class ApplicationService:
                 'student': student,
                 'company': company,
                 'job_post': job_post,
+                'email_rejected_subject': email_rejected_subject,
                 'email_rejected_content': email_rejected_content
             })
 

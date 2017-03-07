@@ -175,8 +175,9 @@ def modify_status(company_id, application_id):
     try:
         token_data = auth.extract_data(request.headers)
         current_status = request.json['status']
+        email_rejected_subject = request.json['email_rejected_subject']
         email_rejected_content = request.json['email_rejected_content']
-        _application.modify_status(company_id, application_id, current_status, email_rejected_content)
+        _application.modify_status(company_id, application_id, current_status, email_rejected_subject, email_rejected_content)
 
         token = auth.create_token({
             'exp': datetime.utcnow() + timedelta(days=365),
