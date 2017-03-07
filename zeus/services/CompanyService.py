@@ -26,7 +26,9 @@ class CompanyService:
             applications = Application.objects(job_post=job_id).exclude('job_post').all()
         applicants = []
         for application in applications:
-            applicants.append(application.get_applicant())
+            applicant = application.get_applicant()
+            applicant['id'] = application.id
+            applicants.append(applicant)
         return applicants
 
     def get_company(self, company_id):
