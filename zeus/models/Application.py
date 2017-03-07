@@ -53,7 +53,7 @@ class Application(Document):
     def get_applicant(self):
         email = UserStudent.objects(student=self.student.id).first().email
         return {
-            'id': self.id,
+            'id': self._id,
             'student': derefer(self.student),
             'email': email,
             'applied_at': self.applied_at.isoformat(),
