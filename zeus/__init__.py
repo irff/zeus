@@ -4,8 +4,8 @@ from mongoengine import connect
 from celery import Celery
 from flask_mail import Mail
 from flask_cors import CORS
-from minio import Minio
-from minio.error import ResponseError
+# from minio import Minio
+# from minio.error import ResponseError
 
 app = Flask('Quint API', template_folder='zeus/html')
 env = DotEnv()
@@ -31,15 +31,15 @@ connect(env.app.config['MONGODB_DB'])
 
 mail = Mail(app)
 
-minio_client = Minio(env.app.config['MINIO_ENDPOINT'],
-               access_key=env.app.config['MINIO_ACCESS_KEY'],
-               secret_key=env.app.config['MINIO_SECRET_KEY'],
-               secure=(env.app.config['MINIO_SECURE'] == 'True'))
-
-try:
-    minio_client.make_bucket('companies', location='us-east-1')
-except ResponseError as err:
-    print(err)
+# minio_client = Minio(env.app.config['MINIO_ENDPOINT'],
+#                access_key=env.app.config['MINIO_ACCESS_KEY'],
+#                secret_key=env.app.config['MINIO_SECRET_KEY'],
+#                secure=(env.app.config['MINIO_SECURE'] == 'True'))
+#
+# try:
+#     minio_client.make_bucket('companies', location='us-east-1')
+# except ResponseError as err:
+#     print(err)
 
 import api.student
 import api.job_post

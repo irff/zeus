@@ -236,33 +236,33 @@ def get_statistics(company_id):
     }), 200
 
 
-@app.route("/companies/<company_id>/upload/logo", methods=['POST'])
-def company_upload_logo(company_id):
-    file_name = '{0}_logo'.format(company_id)
-    logo_path = upload.upload(request.files, company_id, file_name)
-
-    if logo_path == 'failed':
-        return jsonify({
-            'error': 'failed'
-        }), 400
-    else:
-        return jsonify({
-            'logo_path': logo_path
-        }), 200
-
-@app.route("/companies/<company_id>/upload/header", methods=['POST'])
-def company_upload_logo(company_id):
-    file_name = '{0}_header'.format(company_id)
-    header_path = upload.upload(request.files, company_id, file_name)
-
-    if header_path == 'failed':
-        return jsonify({
-            'error': 'failed'
-        }), 400
-    else:
-        return jsonify({
-            'header_path': header_path
-        }), 200
+# @app.route("/companies/<company_id>/upload/logo", methods=['POST'])
+# def company_upload_logo(company_id):
+#     file_name = '{0}_logo'.format(company_id)
+#     logo_path = upload.upload(request.files, company_id, file_name)
+#
+#     if logo_path == 'failed':
+#         return jsonify({
+#             'error': 'failed'
+#         }), 400
+#     else:
+#         return jsonify({
+#             'logo_path': logo_path
+#         }), 200
+#
+# @app.route("/companies/<company_id>/upload/header", methods=['POST'])
+# def company_upload_logo(company_id):
+#     file_name = '{0}_header'.format(company_id)
+#     header_path = upload.upload(request.files, company_id, file_name)
+#
+#     if header_path == 'failed':
+#         return jsonify({
+#             'error': 'failed'
+#         }), 400
+#     else:
+#         return jsonify({
+#             'header_path': header_path
+#         }), 200
 
 # @app.route("/companies")
 # @auth.require_token
