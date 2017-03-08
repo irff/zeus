@@ -57,7 +57,7 @@ class JobPost(Document):
         return {
             'id': str(self.id),
             'role': self.role,
-            'category': self.category,
+            'category': derefer(self.category),
             'location': self.location,
             'job_schedule': derefer(self.job_schedule),
             'salary': derefer(self.salary),
