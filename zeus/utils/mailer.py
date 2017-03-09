@@ -23,6 +23,7 @@ def send_resume_read(**kwargs):
         data = kwargs['data']
         student = data['student']
 
+        data['header'] = '{0}/static/header_email.png'.format(app.config['CURRENT_HOST'])
         template = 'for_student/email_resume_read.html'
 
         body = render_template(template, **data)
@@ -42,6 +43,7 @@ def send_updated_status(**kwargs):
         subject = 'Notifikasi Quint untuk {0}'.format(student.first_name)
         if data['current_status'] == 'ACCEPTED':
             template = 'for_student/email_get_offer.html'
+            data['header'] = '{0}/static/header_email.png'.format(app.config['CURRENT_HOST'])
         elif data['current_status'] == 'REJECTED':
             template = 'for_student/email_rejected.html'
             subject = data['email_rejected_subject']

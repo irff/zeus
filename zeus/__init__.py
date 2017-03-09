@@ -23,6 +23,7 @@ app.config['MAIL_USERNAME'] = env.app.config['MAIL_USERNAME']
 app.config['MAIL_PASSWORD'] = env.app.config['MAIL_PASSWORD']
 app.config['MAIL_DEFAULT_SENDER'] = (env.app.config['MAIL_SENDER_NAME'], env.app.config['MAIL_USERNAME'])
 app.config['TESTING'] = env.app.config['TESTING']
+app.config['CURRENT_HOST'] = env.app.config['STAGING_HOST'] if env.app.config['TESTING'] else env.app.config['PROD_HOST']
 
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(env.app.config)
@@ -44,3 +45,4 @@ mail = Mail(app)
 import api.student
 import api.job_post
 import api.company
+import api.category
