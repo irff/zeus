@@ -128,7 +128,7 @@ def modify_company(company_id):
 def get_jobs_applications(company_id):
     try:
         token_data = auth.extract_data(request.headers)
-        is_new_application = request.args.get('new', type=bool)
+        is_new_application = request.args.get('new').lower() == 'true'
         applications = _company.get_jobs_applications(company_id=company_id, is_new_application=is_new_application)
 
         token = auth.create_token({
@@ -175,8 +175,12 @@ def modify_status(company_id, application_id):
     try:
         token_data = auth.extract_data(request.headers)
         current_status = request.json['status']
-        email_rejected_subject = request.json['email_rejected_subject']
-        email_rejected_content = request.json['email_rejected_content']
+        email_rejected_subject = ''
+        if 'email_rejected_subject' in request.json:
+            email_rejected_subject = request.json['email_rejected_subject']
+        email_rejected_content = ''
+        if 'email_rejected_content' in request.json:
+            email_rejected_content = request.json['email_rejected_content']
         _application.modify_status(company_id, application_id, current_status, email_rejected_subject, email_rejected_content)
 
         token = auth.create_token({

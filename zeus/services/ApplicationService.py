@@ -13,6 +13,8 @@ class ApplicationService:
         if prev_status == 'REJECTED' or prev_status == 'ACCEPTED':
             return
 
+        prev_status_history = StatusHistory(status=application.status)
+        application.status_histories.append(prev_status_history)
         application.status = current_status
         application.is_new = False
         application.save()
@@ -46,11 +48,12 @@ class ApplicationService:
         if application is None or not application.is_new:
             return
 
-        prev_status_history = StatusHistory({'status': application.status})
+        prev_status_history = StatusHistory(status=application.status)
         application.status_histories.append(prev_status_history)
 
         application.is_new = False
         application.status = 'RESUME_REVIEWED'
+        application.save()
 
         email = UserStudent.objects(student=application.student.id).first().email
         student = application.student
