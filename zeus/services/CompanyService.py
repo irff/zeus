@@ -1,6 +1,6 @@
 from datetime import *
 
-from zeus.models import Application, Company, JobPost, JobSchedule
+from zeus.models import Application, Company, JobPost, JobSchedule, Category
 from zeus.utils import mapper
 
 
@@ -14,6 +14,11 @@ class CompanyService:
         data['status'] = mapper.map_generate_status(data['status'])
         data['is_open'] = True
         data['job_type'] = 'internship'
+        category = Category.objects(name=data['category']).get()
+        if category is None:
+            category = Category(name=data['category'])
+            category.save()
+        data['category'] = category.id
         job = JobPost(**data)
         job.company = Company.objects(id=company_id).first()
         job.save()
