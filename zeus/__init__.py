@@ -46,3 +46,4 @@ import api.student
 import api.job_post
 import api.company
 import api.category
+import api.study_reference

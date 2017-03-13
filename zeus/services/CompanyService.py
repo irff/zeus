@@ -14,7 +14,7 @@ class CompanyService:
         data['status'] = mapper.map_generate_status(data['status'])
         data['is_open'] = True
         data['job_type'] = 'internship'
-        category = Category.objects(name=data['category']).get()
+        category = Category.objects(name=data['category']).first()
         if category is None:
             category = Category(name=data['category'])
             category.save()

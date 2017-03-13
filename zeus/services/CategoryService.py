@@ -10,3 +10,10 @@ class CategoryService:
         for category in categories:
             list_category.append(category.name)
         return list_category
+
+    def get_or_create(self, name):
+        category = Category.objects(name=name).first()
+        if category is None:
+            category = Category(name=name)
+            category.save()
+        return category
