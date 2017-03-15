@@ -9,10 +9,6 @@ from zeus.utils import auth
 def get_categories():
     categories = _category.get_categories()
 
-    categories_json = []
-    for category in categories:
-        categories_json.append(category.name)
-
     return jsonify({
-        'categories': categories_json
+        'categories': categories
     }), 200
