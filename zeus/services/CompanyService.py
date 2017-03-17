@@ -18,7 +18,7 @@ class CompanyService:
         if category is None:
             category = Category(name=data['category'])
             category.save()
-        data['category'] = category.id
+        data['category'] = category
         job = JobPost(**data)
         job.company = Company.objects(id=company_id).first()
         job.save()
