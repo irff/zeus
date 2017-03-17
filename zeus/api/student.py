@@ -160,12 +160,11 @@ def get_student_jobs(student_id):
 def apply_job(student_id):
     job_id = request.json['job_id']
     application = Application(student=student_id, job_post=job_id)
-    job_post = JobPost.objects(id=job_id).first()
-    application.company = job_post.company
+    application.company = JobPost.objects(id=job_id).first().company
     application.is_new = True
     application.save()
     job_post = JobPost.objects(id=job_id).first()
-    company = JobPost.objects(id=job_id).first().company
+    company = job_post.company
     email = UserCompany.objects(company=company).first().email
     student = Student.objects(id=student_id).first()
     student.email = UserStudent.objects(student=student_id).first().email
