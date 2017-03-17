@@ -128,7 +128,9 @@ def modify_company(company_id):
 def get_jobs_applications(company_id):
     try:
         token_data = auth.extract_data(request.headers)
-        is_new_application = bool(request.args.get('new')) == True
+        is_new_application = False
+        if 'new' in request.args:
+            is_new_application = request.args.get('new').lower() == 'true'
         applications = _company.get_jobs_applications(company_id=company_id, is_new_application=is_new_application)
 
         token = auth.create_token({
