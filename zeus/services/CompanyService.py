@@ -10,6 +10,7 @@ class CompanyService:
         start_at = datetime.strptime(data['job_schedule']['start_at'], '%d-%m-%Y')
         end_at = datetime.strptime(data['job_schedule']['end_at'], '%d-%m-%Y')
         job_schedule = JobSchedule(start_at=start_at, end_at=end_at)
+        data.pop('categories', None)
         data['job_schedule'] = job_schedule
         data['status'] = mapper.map_generate_status(data['status'])
         data['is_open'] = True
