@@ -1,6 +1,6 @@
 from mongoengine import *
 from datetime import datetime
-from util import derefer, to_json
+from util import derefer, to_json, update_modified
 from StudyReference import StudyReference
 from UserStudent import UserStudent
 from zeus.utils import mapper
@@ -30,7 +30,7 @@ class StatusHistory(EmbeddedDocument):
             'status': self.status
         }
 
-
+@update_modified.apply
 class Application(Document):
     job_post = ReferenceField('JobPost', reverse_delete_rule=NULLIFY, unique_with='student')
     student = ReferenceField('Student', reverse_delete_rule=NULLIFY)
@@ -39,6 +39,7 @@ class Application(Document):
     status = StringField(max_length=255, choices=status_choices, default='WAIT_FOR_REVIEW')
     status_histories = ListField(EmbeddedDocumentField('StatusHistory'))
     is_new = BooleanField()
+    updated_at = DateTimeField()
 
     def serialize(self):
         return {
@@ -69,6 +70,7 @@ class Application(Document):
                 'role': self.job_post.role,
                 'company': {
                     'logo_url': self.job_post.company.logo_url,
+                    'company_address': self.job_post.company.location,
                     'name': self.job_post.company.name
                 },
                 'study_references': study_references.serialize_topics()
