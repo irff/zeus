@@ -201,23 +201,20 @@ def modify_status(company_id, application_id):
 @auth.privilege('company')
 @auth.same_property('company_id')
 def company_add_job(company_id):
-    try:
-        token_data = auth.extract_data(request.headers)
-        data = request.json
-        job = _company.add_job(company_id=company_id, data=data)
+    token_data = auth.extract_data(request.headers)
+    data = request.json
+    job = _company.add_job(company_id=company_id, data=data)
 
-        token = auth.create_token({
-            'exp': datetime.utcnow() + timedelta(days=365),
-            'user_id': token_data['user_id'],
-            'company_id': token_data['company_id'],
-            'role': 'company'
-        })
-        return jsonify({
-            'token': token,
-            'job_id': str(job.id)
-        }), 201
-    except (InvalidQueryError, FieldDoesNotExist):
-        return jsonify(), 400
+    token = auth.create_token({
+        'exp': datetime.utcnow() + timedelta(days=365),
+        'user_id': token_data['user_id'],
+        'company_id': token_data['company_id'],
+        'role': 'company'
+    })
+    return jsonify({
+        'token': token,
+        'job_id': str(job.id)
+    }), 201
 
 
 @app.route("/companies/<company_id>/statistics")
