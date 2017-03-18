@@ -1,16 +1,16 @@
 def map_generate_status(list_status):
     generated_status = ['WAIT_FOR_REVIEW', 'RESUME_REVIEWED', 'REJECTED', 'ACCEPTED']
     for status in list_status:
-        if status == 'PHONE':
+        if status == 'PHONE_INTERVIEW':
             generated_status.append('WAIT_FOR_PHONE')
             generated_status.append('PHONE_REVIEWED')
         elif status == 'ONLINE_TEST':
             generated_status.append('WAIT_FOR_ONLINE_TEST')
             generated_status.append('ONLINE_TEST_REVIEWED')
-        elif status == 'SUBMISSION':
+        elif status == 'TASK_SUBMISSION':
             generated_status.append('WAIT_FOR_SUBMISSION')
             generated_status.append('SUBMISSION_REVIEWED')
-        elif status == 'ONSITE':
+        elif status == 'ONSITE_INTERVIEW':
             generated_status.append('WAIT_FOR_ONSITE_TEST')
             generated_status.append('ONSITE_TEST_REVIEWED')
     return generated_status
