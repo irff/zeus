@@ -73,7 +73,7 @@ class Application(Document):
                     'company_address': self.job_post.location,
                     'name': self.job_post.company.name
                 },
-                'study_references': study_references.serialize_topics()
+                'study_references': study_references.serialize_topics() if study_references != None else []
             },
             'updated_at': self.updated_at.isoformat()
         }
