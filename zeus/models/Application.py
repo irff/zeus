@@ -62,7 +62,10 @@ class Application(Document):
         }
 
     def serialize_for_student(self):
-        study_references = StudyReference.objects(category=self.job_post.category).first()
+        if self.job_post is not None:
+            study_references = StudyReference.objects(category=self.job_post.category).first()
+        else:
+            study_references = None
         return {
             'status': mapper.map_status(self.status, 'student'),
             'salary': self.job_post.salary.serialize(),
